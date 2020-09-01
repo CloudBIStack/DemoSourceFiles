@@ -1,0 +1,15 @@
+create table t_adf_errorlog (sno int,pipelinename varchar(100), errormessage varchar(1000));
+
+
+create procedure usp_insertlogdetails  (@sno int, @pipelinename varchar(100), @errormessage varchar(1000))
+as
+begin
+insert into t_adf_errorlog values(@sno, @pipelinename, @errormessage)
+end;
+
+select * from t_adf_errorlog;
+
+
+
+
+select isnull(max(sno),0),max(sno)+1) as maxno from t_adf_errorlog
