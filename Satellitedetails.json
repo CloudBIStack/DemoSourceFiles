@@ -1,0 +1,17 @@
+[		{
+    
+        "id":"1",
+		"Products": [
+            {"name":"mobile", "modelname":"android","manufacturer":"oneplus"}
+        ],
+		"pricerange":"5000-50000"
+		},
+		{
+		"id":"2",
+		"Products": [
+            {"name":"mobile", "modelname":"iphone","manufacturer":"apple"}
+        ],
+		"pricerange":"50000-500000"
+		}
+    
+]
