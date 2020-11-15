@@ -1,0 +1,23 @@
+{
+	"name": "dsDummy",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsADL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "staging.csv",
+				"folderPath": "JulianOutput",
+				"container": "democontainer"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
