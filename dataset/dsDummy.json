@@ -16,8 +16,18 @@
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
+			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "sourcefilename",
+				"type": "String"
+			},
+			{
+				"name": "outputfolder",
+				"type": "String"
+			}
+		]
 	}
 }
