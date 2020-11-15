@@ -25,7 +25,7 @@
 						"referenceName": "dsIntermediateADL",
 						"type": "DatasetReference"
 					},
-					"name": "sink2"
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -36,7 +36,7 @@
 					"name": "Lookup1"
 				}
 			],
-			"script": "parameters{\n\tjulianfilename as string\n}\nsource(output(\n\t\tcol1 as string,\n\t\tcol2 as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\trowUrlColumn: 'SourceFileName') ~> SrcPlaceHolder\nsource(output(\n\t\tjuliandate as integer,\n\t\tuniversaldate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select * from t_date_lkup',\n\tformat: 'query') ~> source1\nSrcPlaceHolder derive(JulianDatePortionDerived = replace(substring($julianfilename,  instr($julianfilename,toString(year(toDate(currentTimestamp()))))+4),'.csv','')) ~> DerivedColumn1\nDerivedColumn1, source1 lookup(toInteger(JulianDatePortionDerived) == juliandate,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(juliandate, true),\n\tbroadcast: 'auto')~> Lookup1\nLookup1 sink(input(\n\t\tsourcefilename as string,\n\t\toutputfolder as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['stagingfile.csv'],\n\tmapColumn(\n\t\tsourcefilename = SourceFileName,\n\t\toutputfolder = universaldate\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1) ~> sink2"
+			"script": "parameters{\n\tjulianfilename as string\n}\nsource(output(\n\t\tcol1 as string,\n\t\tcol2 as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\trowUrlColumn: 'SourceFileName') ~> SrcPlaceHolder\nsource(output(\n\t\tjuliandate as integer,\n\t\tuniversaldate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select * from t_date_lkup',\n\tformat: 'query') ~> source1\nSrcPlaceHolder derive(JulianDatePortionDerived = replace(substring($julianfilename,  instr($julianfilename,toString(year(toDate(currentTimestamp()))))+4),'.csv','')) ~> DerivedColumn1\nDerivedColumn1, source1 lookup(toInteger(JulianDatePortionDerived) == juliandate,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(juliandate, true),\n\tbroadcast: 'auto')~> Lookup1\nLookup1 sink(input(\n\t\tsourcefilename as string,\n\t\toutputfolder as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['staging.csv'],\n\tmapColumn(\n\t\tsourcefilename = SourceFileName,\n\t\toutputfolder = universaldate\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
 		}
 	}
 }
