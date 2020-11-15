@@ -1,0 +1,25 @@
+{
+	"name": "dsSQLIntermediate",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsazsql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "sourcefilename",
+				"type": "varchar"
+			},
+			{
+				"name": "destinationfoldername",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "t_stg_datecnv"
+		}
+	}
+}
