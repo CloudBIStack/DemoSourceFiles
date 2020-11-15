@@ -6,7 +6,10 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"newfilename": {
+			"filename": {
+				"type": "string"
+			},
+			"foldername": {
 				"type": "string"
 			}
 		},
@@ -16,10 +19,13 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@dataset().newfilename",
+					"value": "@dataset().filename",
 					"type": "Expression"
 				},
-				"folderPath": "JulianOutput",
+				"folderPath": {
+					"value": "@dataset().foldername",
+					"type": "Expression"
+				},
 				"container": "democontainer"
 			},
 			"columnDelimiter": ",",
