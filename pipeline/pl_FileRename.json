@@ -16,10 +16,12 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "dsJulianInput",
+						"referenceName": "dsJulianInputFolder",
 						"type": "DatasetReference"
 					},
-					"fieldList": [],
+					"fieldList": [
+						"childItems"
+					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings"
 					},
@@ -41,6 +43,10 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata - Get Files from BLOB').output.childItems",
+						"type": "Expression"
+					},
 					"activities": [
 						{
 							"name": "dataflow3",
@@ -58,12 +64,10 @@
 								"dataflow": {
 									"referenceName": "dataflow3",
 									"type": "DataFlowReference",
-									"datasetParameters": {
-										"SourceFile": {
-											"FileName": {
-												"value": "@pipeline().parameters.FileName",
-												"type": "Expression"
-											}
+									"parameters": {
+										"julianfilename": {
+											"value": "'@{item().name}'",
+											"type": "Expression"
 										}
 									}
 								},
@@ -152,11 +156,8 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "dsJulianInput",
-						"type": "DatasetReference",
-						"parameters": {
-							"FileName": "MyFile.D202008.csv"
-						}
+						"referenceName": "dsJulianInputFolder",
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [

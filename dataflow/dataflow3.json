@@ -5,10 +5,6 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "dsJulianInput",
-						"type": "DatasetReference"
-					},
 					"name": "SourceFile"
 				},
 				{
@@ -21,6 +17,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "dsIntermediateADL",
+						"type": "DatasetReference"
+					},
 					"name": "sink2"
 				}
 			],
@@ -29,16 +29,10 @@
 					"name": "DerivedColumn1"
 				},
 				{
-					"name": "Filter1"
-				},
-				{
-					"name": "SurrogateKey1"
-				},
-				{
 					"name": "Lookup1"
 				}
 			],
-			"script": "source(output(\n\t\tcol1 as string,\n\t\tcol2 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\trowUrlColumn: 'SourceFileName') ~> SourceFile\nsource(output(\n\t\tjuliandate as integer,\n\t\tuniversaldate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select * from t_date_lkup',\n\tformat: 'query') ~> source1\nFilter1 derive(DerivedFileName = replace(substring(SourceFileName,  instr(SourceFileName,toString(year(toDate(currentTimestamp()))))+4),'.csv','')) ~> DerivedColumn1\nSurrogateKey1 filter(Key==1) ~> Filter1\nSourceFile keyGenerate(output(Key as long),\n\tstartAt: 1L) ~> SurrogateKey1\nDerivedColumn1, source1 lookup(toInteger(DerivedFileName) == juliandate,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(juliandate, true),\n\tbroadcast: 'auto')~> Lookup1\nLookup1 sink(partitionFileNames:['DynamicFileName.csv'],\n\tmapColumn(\n\t\tuniversaldate\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1) ~> sink2"
+			"script": "parameters{\n\tjulianfilename as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\trowUrlColumn: 'SourceFileName') ~> SourceFile\nsource(output(\n\t\tjuliandate as integer,\n\t\tuniversaldate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select * from t_date_lkup',\n\tformat: 'query') ~> source1\nSourceFile derive(DerivedFileName = replace(substring($julianfilename,  instr($julianfilename,toString(year(toDate(currentTimestamp()))))+4),'.csv','')) ~> DerivedColumn1\nDerivedColumn1, source1 lookup(toInteger(DerivedFileName) == juliandate,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(juliandate, true),\n\tbroadcast: 'auto')~> Lookup1\nLookup1 sink(input(\n\t\tuniversaldate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['DynamicFileName.csv'],\n\tmapColumn(\n\t\tuniversaldate\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1) ~> sink2"
 		}
 	}
 }
