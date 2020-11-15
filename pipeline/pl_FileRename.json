@@ -47,7 +47,7 @@
 						"value": "@activity('Get Metadata - Get Files from BLOB').output.childItems",
 						"type": "Expression"
 					},
-					"isSequential": true,
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "dataflow3",
