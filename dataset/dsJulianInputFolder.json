@@ -1,5 +1,5 @@
 {
-	"name": "dsJulianInput",
+	"name": "dsJulianInputFolder",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "lsBlob",
@@ -10,10 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": {
-					"value": "@dataset().FileName",
-					"type": "Expression"
-				},
 				"container": "democontainer"
 			},
 			"columnDelimiter": ",",
