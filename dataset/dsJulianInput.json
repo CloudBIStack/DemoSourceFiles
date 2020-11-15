@@ -2,7 +2,7 @@
 	"name": "dsJulianInput",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "lsADL",
+			"referenceName": "lsBlob",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
@@ -19,7 +19,6 @@
 					"value": "@dataset().FileName",
 					"type": "Expression"
 				},
-				"folderPath": "Input",
 				"container": "democontainer"
 			},
 			"columnDelimiter": ",",
