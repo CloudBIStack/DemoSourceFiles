@@ -1,0 +1,26 @@
+{
+	"name": "dssqldatelkup",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsazsql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "juliandate",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "universaldate",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "t_date_lkup"
+		}
+	}
+}
