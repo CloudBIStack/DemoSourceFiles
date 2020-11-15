@@ -11,7 +11,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": "DynamicFileName.csv",
-				"folderPath": "Output1",
+				"folderPath": "Output",
 				"container": "democontainer"
 			},
 			"columnDelimiter": ",",
