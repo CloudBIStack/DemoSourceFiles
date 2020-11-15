@@ -23,7 +23,8 @@
 						"childItems"
 					],
 					"storeSettings": {
-						"type": "AzureBlobStorageReadSettings"
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true
 					},
 					"formatSettings": {
 						"type": "DelimitedTextReadSettings"
@@ -180,7 +181,7 @@
 						"referenceName": "dsJulianOutput",
 						"type": "DatasetReference",
 						"parameters": {
-							"newfilename": {
+							"filename": {
 								"value": "@activity('Lookup1').output.firstRow.universaldate",
 								"type": "Expression"
 							}
