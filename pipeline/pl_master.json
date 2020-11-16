@@ -16,8 +16,8 @@
 				}
 			},
 			{
-				"name": "WebHook1",
-				"type": "WebHook",
+				"name": "Web1",
+				"type": "WebActivity",
 				"dependsOn": [
 					{
 						"activity": "Execute Pipeline1",
@@ -26,15 +26,21 @@
 						]
 					}
 				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
 					"url": "https://prod-06.centralindia.logic.azure.com:443/workflows/117dc6d3ef8149ed8c12b5e2d7933d09/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=nXE1QtK13O4708gdrTkiULAAipGEV6t5FS9PNObaVO8",
 					"method": "POST",
 					"body": {
-						"value": "{\n\"PipelineName\":\"@{pipeline().Pipeline}\",\n\"ErrorMessage\":\"@{activity('Execute Pipeline1').Error.Message}\"\n}",
+						"value": "{\n\"PipelineName\":\"@{pipeline().Pipeline}\"\n\"ErrorMessage\":\"@{activity('Execute Pipeline1').Error.Message}\"\n}",
 						"type": "Expression"
-					},
-					"timeout": "00:10:00"
+					}
 				}
 			}
 		],
