@@ -19,7 +19,9 @@
 						"referenceName": "dsJulianInputFolder",
 						"type": "DatasetReference"
 					},
-					"fieldList": [],
+					"fieldList": [
+						"childItems"
+					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"recursive": true
@@ -43,7 +45,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Metadata - Get Files from BLOB_copy1').output.childitems",
+						"value": "@activity('Get Metadata - Get Files from BLOB_copy1').output.childite",
 						"type": "Expression"
 					},
 					"activities": [
