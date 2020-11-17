@@ -18,10 +18,10 @@
 			"value": ""
 		},
 		"lsAzureBatch_properties_typeProperties_accountName": {
-			"value": "azurebatchdemo21"
+			"value": "azbatch21"
 		},
 		"lsAzureBatch_properties_typeProperties_batchUri": {
-			"value": "https://azurebatchdemo21.southindia.batch.azure.com"
+			"value": "https://azbatch21.centralus.batch.azure.com"
 		},
 		"lsAzureBatch_properties_typeProperties_poolName": {
 			"value": "azpool"

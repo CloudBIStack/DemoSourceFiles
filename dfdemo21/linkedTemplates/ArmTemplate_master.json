@@ -25,11 +25,11 @@
 		},
 		"lsAzureBatch_properties_typeProperties_accountName": {
 			"type": "string",
-			"defaultValue": "azurebatchdemo21"
+			"defaultValue": "azbatch21"
 		},
 		"lsAzureBatch_properties_typeProperties_batchUri": {
 			"type": "string",
-			"defaultValue": "https://azurebatchdemo21.southindia.batch.azure.com"
+			"defaultValue": "https://azbatch21.centralus.batch.azure.com"
 		},
 		"lsAzureBatch_properties_typeProperties_poolName": {
 			"type": "string",
