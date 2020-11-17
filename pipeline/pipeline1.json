@@ -20,7 +20,7 @@
 						"referenceName": "lsADL",
 						"type": "LinkedServiceReference"
 					},
-					"folderPath": "democontainer/Input",
+					"folderPath": "democontainer/input",
 					"referenceObjects": {
 						"linkedServices": [],
 						"datasets": []
