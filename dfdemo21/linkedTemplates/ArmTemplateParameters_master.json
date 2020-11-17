@@ -8,11 +8,23 @@
 		"lsADL_connectionString": {
 			"value": ""
 		},
+		"lsAzureBatch_accessKey": {
+			"value": ""
+		},
 		"lsBlob_connectionString": {
 			"value": ""
 		},
 		"lsazsql_connectionString": {
 			"value": ""
+		},
+		"lsAzureBatch_properties_typeProperties_accountName": {
+			"value": "azurebatchdemo21"
+		},
+		"lsAzureBatch_properties_typeProperties_batchUri": {
+			"value": "https://azurebatchdemo21.southindia.batch.azure.com"
+		},
+		"lsAzureBatch_properties_typeProperties_poolName": {
+			"value": "azpool"
 		},
 		"containerUri": {
 			"value": ""

@@ -18,6 +18,22 @@
 		"lsazsql_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'lsazsql'"
+		},
+		"lsAzureBatch_accessKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessKey' of 'lsAzureBatch'"
+		},
+		"lsAzureBatch_properties_typeProperties_accountName": {
+			"type": "string",
+			"defaultValue": "azurebatchdemo21"
+		},
+		"lsAzureBatch_properties_typeProperties_batchUri": {
+			"type": "string",
+			"defaultValue": "https://azurebatchdemo21.southindia.batch.azure.com"
+		},
+		"lsAzureBatch_properties_typeProperties_poolName": {
+			"type": "string",
+			"defaultValue": "azpool"
 		}
 	},
 	"variables": {
@@ -317,6 +333,153 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/lsAzureBatch')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBatch",
+				"typeProperties": {
+					"accountName": "[parameters('lsAzureBatch_properties_typeProperties_accountName')]",
+					"accessKey": {
+						"type": "SecureString",
+						"value": "[parameters('lsAzureBatch_accessKey')]"
+					},
+					"batchUri": "[parameters('lsAzureBatch_properties_typeProperties_batchUri')]",
+					"poolName": "[parameters('lsAzureBatch_properties_typeProperties_poolName')]",
+					"linkedServiceName": {
+						"referenceName": "lsADL",
+						"type": "LinkedServiceReference"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lsADL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Custom1",
+						"type": "Custom",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"command": "python sum.py",
+							"resourceLinkedService": {
+								"referenceName": "lsADL",
+								"type": "LinkedServiceReference"
+							},
+							"folderPath": "democontainer/Input",
+							"referenceObjects": {
+								"linkedServices": [],
+								"datasets": []
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "lsAzureBatch",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lsADL')]",
+				"[concat(variables('factoryId'), '/linkedServices/lsAzureBatch')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_FileRename_copy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata - Get Files from BLOB_copy1",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "dsJulianInputFolder",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata - Get Files from BLOB_copy1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata - Get Files from BLOB_copy1').output.childite",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Wait1",
+									"type": "Wait",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 1
+									}
+								}
+							]
+						}
+					}
+				],
+				"variables": {
+					"test": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-11-13T12:18:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dsJulianInputFolder')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/dataflow3')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -433,106 +596,33 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_FileRename_copy1')]",
+			"name": "[concat(parameters('factoryName'), '/pl_master')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Get Metadata - Get Files from BLOB_copy1",
-						"type": "GetMetadata",
+						"name": "Execute Pipeline1",
+						"type": "ExecutePipeline",
 						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
 						"userProperties": [],
 						"typeProperties": {
-							"dataset": {
-								"referenceName": "dsJulianInputFolder",
-								"type": "DatasetReference",
-								"parameters": {}
+							"pipeline": {
+								"referenceName": "pl_FileRename_copy",
+								"type": "PipelineReference"
 							},
-							"fieldList": [
-								"childItems"
-							],
-							"storeSettings": {
-								"type": "AzureBlobStorageReadSettings",
-								"recursive": true
-							},
-							"formatSettings": {
-								"type": "DelimitedTextReadSettings"
-							}
+							"waitOnCompletion": true,
+							"parameters": {}
 						}
 					},
 					{
-						"name": "ForEach1",
-						"type": "ForEach",
+						"name": "Web1",
+						"type": "WebActivity",
 						"dependsOn": [
 							{
-								"activity": "Get Metadata - Get Files from BLOB_copy1",
+								"activity": "Execute Pipeline1",
 								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Get Metadata - Get Files from BLOB_copy1').output.childitems",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "dataflow4",
-									"type": "ExecuteDataFlow",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataflow": {
-											"referenceName": "dataflow4",
-											"type": "DataFlowReference",
-											"parameters": {
-												"SrcFileName": {
-													"value": "'@{item().name}'",
-													"type": "Expression"
-												}
-											},
-											"datasetParameters": {
-												"source1": {},
-												"SQLLkup": {},
-												"sink1": {}
-											}
-										},
-										"staging": {},
-										"compute": {
-											"coreCount": 8,
-											"computeType": "General"
-										},
-										"traceLevel": "Fine"
-									}
-								}
-							]
-						}
-					},
-					{
-						"name": "Lookup1",
-						"type": "Lookup",
-						"dependsOn": [
-							{
-								"activity": "ForEach1",
-								"dependencyConditions": [
-									"Succeeded"
+									"Failed"
 								]
 							}
 						],
@@ -545,129 +635,20 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "select * from t_stg_datecnv",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "dsSQLIntermediate",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "ForEach2",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Lookup1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Lookup1').output.value",
+							"url": "https://prod-18.centralindia.logic.azure.com:443/workflows/edead512d89f4ad7b4f168a1fdc1a1f3/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=F0E2pjLfhnQ1QN9NRQfETT9kRZqFz_HvjcCS7ZXGsl4",
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"value": "{\n\"PipelineName\":\"@{pipeline().Pipeline}\",\n\"ErrorMessage\":\"@{activity('Execute Pipeline1').Error.Message}\"\n}",
 								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Copy data1",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "DelimitedTextSource",
-											"storeSettings": {
-												"type": "AzureBlobStorageReadSettings",
-												"recursive": true
-											},
-											"formatSettings": {
-												"type": "DelimitedTextReadSettings"
-											}
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobStorageWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "dsJulianFile",
-											"type": "DatasetReference",
-											"parameters": {
-												"FileName": {
-													"value": "@item().sourcefilename",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "dsJulianOutput",
-											"type": "DatasetReference",
-											"parameters": {
-												"filename": {
-													"value": "@item().sourcefilename",
-													"type": "Expression"
-												},
-												"foldername": {
-													"value": "@item().destinationfoldername",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
+							}
 						}
 					}
 				],
-				"variables": {
-					"test": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"lastPublishTime": "2020-11-13T12:18:48Z"
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/dsJulianInputFolder')]",
-				"[concat(variables('factoryId'), '/datasets/dsSQLIntermediate')]",
-				"[concat(variables('factoryId'), '/dataflows/dataflow4')]",
-				"[concat(variables('factoryId'), '/datasets/dsJulianFile')]",
-				"[concat(variables('factoryId'), '/datasets/dsJulianOutput')]"
+				"[concat(variables('factoryId'), '/pipelines/pl_FileRename_copy')]"
 			]
 		}
 	]

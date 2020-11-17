@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'lsADL'"
 		},
+		"lsAzureBatch_accessKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessKey' of 'lsAzureBatch'"
+		},
 		"lsBlob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'lsBlob'"
@@ -18,6 +22,18 @@
 		"lsazsql_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'lsazsql'"
+		},
+		"lsAzureBatch_properties_typeProperties_accountName": {
+			"type": "string",
+			"defaultValue": "azurebatchdemo21"
+		},
+		"lsAzureBatch_properties_typeProperties_batchUri": {
+			"type": "string",
+			"defaultValue": "https://azurebatchdemo21.southindia.batch.azure.com"
+		},
+		"lsAzureBatch_properties_typeProperties_poolName": {
+			"type": "string",
+			"defaultValue": "azpool"
 		},
 		"containerUri": {
 			"type": "string",
@@ -54,6 +70,18 @@
 					},
 					"lsazsql_connectionString": {
 						"value": "[parameters('lsazsql_connectionString')]"
+					},
+					"lsAzureBatch_accessKey": {
+						"value": "[parameters('lsAzureBatch_accessKey')]"
+					},
+					"lsAzureBatch_properties_typeProperties_accountName": {
+						"value": "[parameters('lsAzureBatch_properties_typeProperties_accountName')]"
+					},
+					"lsAzureBatch_properties_typeProperties_batchUri": {
+						"value": "[parameters('lsAzureBatch_properties_typeProperties_batchUri')]"
+					},
+					"lsAzureBatch_properties_typeProperties_poolName": {
+						"value": "[parameters('lsAzureBatch_properties_typeProperties_poolName')]"
 					}
 				}
 			},
