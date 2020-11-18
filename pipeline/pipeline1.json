@@ -17,17 +17,17 @@
 				"typeProperties": {
 					"command": "python sum.py",
 					"resourceLinkedService": {
-						"referenceName": "lsBlob",
+						"referenceName": "lsADL",
 						"type": "LinkedServiceReference"
 					},
-					"folderPath": "democontainer",
+					"folderPath": "democontainer/input",
 					"referenceObjects": {
 						"linkedServices": [],
 						"datasets": []
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "lsAzureBatch",
+					"referenceName": "lsBatchtest",
 					"type": "LinkedServiceReference"
 				}
 			}
