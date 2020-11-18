@@ -348,13 +348,13 @@
 					"batchUri": "[parameters('lsAzureBatch_properties_typeProperties_batchUri')]",
 					"poolName": "[parameters('lsAzureBatch_properties_typeProperties_poolName')]",
 					"linkedServiceName": {
-						"referenceName": "lsADL",
+						"referenceName": "lsBlob",
 						"type": "LinkedServiceReference"
 					}
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lsADL')]"
+				"[concat(variables('factoryId'), '/linkedServices/lsBlob')]"
 			]
 		},
 		{
@@ -378,10 +378,10 @@
 						"typeProperties": {
 							"command": "python sum.py",
 							"resourceLinkedService": {
-								"referenceName": "lsADL",
+								"referenceName": "lsBlob",
 								"type": "LinkedServiceReference"
 							},
-							"folderPath": "democontainer/input",
+							"folderPath": "democontainer",
 							"referenceObjects": {
 								"linkedServices": [],
 								"datasets": []
@@ -396,7 +396,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lsADL')]",
+				"[concat(variables('factoryId'), '/linkedServices/lsBlob')]",
 				"[concat(variables('factoryId'), '/linkedServices/lsAzureBatch')]"
 			]
 		},
