@@ -405,8 +405,8 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Custom1",
-						"type": "Custom",
+						"name": "Get Metadata1",
+						"type": "GetMetadata",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
@@ -417,26 +417,81 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"command": "python sum.py arg1 arg2",
-							"resourceLinkedService": {
-								"referenceName": "lsADL",
-								"type": "LinkedServiceReference"
+							"dataset": {
+								"referenceName": "dsJulianInputFolder",
+								"type": "DatasetReference",
+								"parameters": {}
 							},
-							"folderPath": "democontainer/input",
-							"referenceObjects": {
-								"linkedServices": [],
-								"datasets": []
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
 							}
-						},
-						"linkedServiceName": {
-							"referenceName": "lsBatchtest",
-							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata1').output.childitems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Custom1",
+									"type": "Custom",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"command": {
+											"value": "@concat('python sum.py ',item().name)",
+											"type": "Expression"
+										},
+										"resourceLinkedService": {
+											"referenceName": "lsADL",
+											"type": "LinkedServiceReference"
+										},
+										"folderPath": "democontainer/input",
+										"referenceObjects": {
+											"linkedServices": [],
+											"datasets": []
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "lsBatchtest",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
 						}
 					}
 				],
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dsJulianInputFolder')]",
 				"[concat(variables('factoryId'), '/linkedServices/lsADL')]",
 				"[concat(variables('factoryId'), '/linkedServices/lsBatchtest')]"
 			]
