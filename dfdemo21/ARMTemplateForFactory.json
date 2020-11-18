@@ -75,7 +75,7 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"command": "python sum.py",
+							"command": "python sum.py arg1 arg2",
 							"resourceLinkedService": {
 								"referenceName": "lsADL",
 								"type": "LinkedServiceReference"
