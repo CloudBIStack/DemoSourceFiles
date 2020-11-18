@@ -49,7 +49,7 @@
 		},
 		"lsBatchtest_properties_typeProperties_poolName": {
 			"type": "string",
-			"defaultValue": "basicpool"
+			"defaultValue": "bp1"
 		},
 		"containerUri": {
 			"type": "string",
