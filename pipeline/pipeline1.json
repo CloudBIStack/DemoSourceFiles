@@ -17,10 +17,10 @@
 				"typeProperties": {
 					"command": "python sum.py",
 					"resourceLinkedService": {
-						"referenceName": "lsADL",
+						"referenceName": "lsBlob",
 						"type": "LinkedServiceReference"
 					},
-					"folderPath": "democontainer/input",
+					"folderPath": "democontainer",
 					"referenceObjects": {
 						"linkedServices": [],
 						"datasets": []
