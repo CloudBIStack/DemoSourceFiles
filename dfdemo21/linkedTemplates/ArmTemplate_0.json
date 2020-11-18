@@ -483,11 +483,36 @@
 										"referenceName": "lsBatchtest",
 										"type": "LinkedServiceReference"
 									}
+								},
+								{
+									"name": "Append variable1",
+									"type": "AppendVariable",
+									"dependsOn": [
+										{
+											"activity": "Custom1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "output",
+										"value": {
+											"value": "@activity('Custom1').output.customOutput.mykey",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
 					}
 				],
+				"variables": {
+					"output": {
+						"type": "Array"
+					}
+				},
 				"annotations": []
 			},
 			"dependsOn": [
