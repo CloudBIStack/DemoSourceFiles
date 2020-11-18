@@ -17,6 +17,9 @@
 		"lsazsql_connectionString": {
 			"value": ""
 		},
+		"lsBatchtest_accessKey": {
+			"value": ""
+		},
 		"lsAzureBatch_properties_typeProperties_accountName": {
 			"value": "azbatch21"
 		},
@@ -25,6 +28,15 @@
 		},
 		"lsAzureBatch_properties_typeProperties_poolName": {
 			"value": "poolhasini"
+		},
+		"lsBatchtest_properties_typeProperties_accountName": {
+			"value": "azbatch2101"
+		},
+		"lsBatchtest_properties_typeProperties_batchUri": {
+			"value": "https://azbatch2101.eastus.batch.azure.com"
+		},
+		"lsBatchtest_properties_typeProperties_poolName": {
+			"value": "azpool"
 		},
 		"containerUri": {
 			"value": ""

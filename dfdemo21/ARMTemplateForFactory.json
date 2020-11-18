@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'lsazsql'"
 		},
+		"lsBatchtest_accessKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessKey' of 'lsBatchtest'"
+		},
 		"lsAzureBatch_properties_typeProperties_accountName": {
 			"type": "string",
 			"defaultValue": "azbatch21"
@@ -34,6 +38,18 @@
 		"lsAzureBatch_properties_typeProperties_poolName": {
 			"type": "string",
 			"defaultValue": "poolhasini"
+		},
+		"lsBatchtest_properties_typeProperties_accountName": {
+			"type": "string",
+			"defaultValue": "azbatch2101"
+		},
+		"lsBatchtest_properties_typeProperties_batchUri": {
+			"type": "string",
+			"defaultValue": "https://azbatch2101.eastus.batch.azure.com"
+		},
+		"lsBatchtest_properties_typeProperties_poolName": {
+			"type": "string",
+			"defaultValue": "azpool"
 		}
 	},
 	"variables": {
@@ -61,17 +77,17 @@
 						"typeProperties": {
 							"command": "python sum.py",
 							"resourceLinkedService": {
-								"referenceName": "lsBlob",
+								"referenceName": "lsADL",
 								"type": "LinkedServiceReference"
 							},
-							"folderPath": "democontainer",
+							"folderPath": "democontainer/input",
 							"referenceObjects": {
 								"linkedServices": [],
 								"datasets": []
 							}
 						},
 						"linkedServiceName": {
-							"referenceName": "lsAzureBatch",
+							"referenceName": "lsBatchtest",
 							"type": "LinkedServiceReference"
 						}
 					}
@@ -79,8 +95,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lsBlob')]",
-				"[concat(variables('factoryId'), '/linkedServices/lsAzureBatch')]"
+				"[concat(variables('factoryId'), '/linkedServices/lsBatchtest')]",
+				"[concat(variables('factoryId'), '/linkedServices/lsADL')]"
 			]
 		},
 		{
@@ -649,6 +665,31 @@
 				"[concat(variables('factoryId'), '/datasets/dsDummy')]",
 				"[concat(variables('factoryId'), '/datasets/dssqldatelkup')]",
 				"[concat(variables('factoryId'), '/datasets/dsSQLIntermediate')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/lsBatchtest')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBatch",
+				"typeProperties": {
+					"accountName": "[parameters('lsBatchtest_properties_typeProperties_accountName')]",
+					"accessKey": {
+						"type": "SecureString",
+						"value": "[parameters('lsBatchtest_accessKey')]"
+					},
+					"batchUri": "[parameters('lsBatchtest_properties_typeProperties_batchUri')]",
+					"poolName": "[parameters('lsBatchtest_properties_typeProperties_poolName')]",
+					"linkedServiceName": {
+						"referenceName": "lsADL",
+						"type": "LinkedServiceReference"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lsADL')]"
 			]
 		}
 	]

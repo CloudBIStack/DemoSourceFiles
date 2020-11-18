@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'lsazsql'"
 		},
+		"lsBatchtest_accessKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessKey' of 'lsBatchtest'"
+		},
 		"lsAzureBatch_properties_typeProperties_accountName": {
 			"type": "string",
 			"defaultValue": "azbatch21"
@@ -34,6 +38,18 @@
 		"lsAzureBatch_properties_typeProperties_poolName": {
 			"type": "string",
 			"defaultValue": "poolhasini"
+		},
+		"lsBatchtest_properties_typeProperties_accountName": {
+			"type": "string",
+			"defaultValue": "azbatch2101"
+		},
+		"lsBatchtest_properties_typeProperties_batchUri": {
+			"type": "string",
+			"defaultValue": "https://azbatch2101.eastus.batch.azure.com"
+		},
+		"lsBatchtest_properties_typeProperties_poolName": {
+			"type": "string",
+			"defaultValue": "azpool"
 		},
 		"containerUri": {
 			"type": "string",
@@ -74,6 +90,9 @@
 					"lsAzureBatch_accessKey": {
 						"value": "[parameters('lsAzureBatch_accessKey')]"
 					},
+					"lsBatchtest_accessKey": {
+						"value": "[parameters('lsBatchtest_accessKey')]"
+					},
 					"lsAzureBatch_properties_typeProperties_accountName": {
 						"value": "[parameters('lsAzureBatch_properties_typeProperties_accountName')]"
 					},
@@ -82,6 +101,15 @@
 					},
 					"lsAzureBatch_properties_typeProperties_poolName": {
 						"value": "[parameters('lsAzureBatch_properties_typeProperties_poolName')]"
+					},
+					"lsBatchtest_properties_typeProperties_accountName": {
+						"value": "[parameters('lsBatchtest_properties_typeProperties_accountName')]"
+					},
+					"lsBatchtest_properties_typeProperties_batchUri": {
+						"value": "[parameters('lsBatchtest_properties_typeProperties_batchUri')]"
+					},
+					"lsBatchtest_properties_typeProperties_poolName": {
+						"value": "[parameters('lsBatchtest_properties_typeProperties_poolName')]"
 					}
 				}
 			},
