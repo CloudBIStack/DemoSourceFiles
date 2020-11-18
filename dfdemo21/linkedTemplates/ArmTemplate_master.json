@@ -33,7 +33,7 @@
 		},
 		"lsAzureBatch_properties_typeProperties_poolName": {
 			"type": "string",
-			"defaultValue": "azpooltest11"
+			"defaultValue": "testpool"
 		},
 		"containerUri": {
 			"type": "string",
