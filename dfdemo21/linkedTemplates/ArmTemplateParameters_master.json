@@ -24,7 +24,7 @@
 			"value": "https://azbatch21.centralus.batch.azure.com"
 		},
 		"lsAzureBatch_properties_typeProperties_poolName": {
-			"value": "azpool"
+			"value": "azpooltest11"
 		},
 		"containerUri": {
 			"value": ""
