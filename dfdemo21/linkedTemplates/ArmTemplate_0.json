@@ -49,7 +49,7 @@
 		},
 		"lsBatchtest_properties_typeProperties_poolName": {
 			"type": "string",
-			"defaultValue": "bp1"
+			"defaultValue": "hasini"
 		}
 	},
 	"variables": {
