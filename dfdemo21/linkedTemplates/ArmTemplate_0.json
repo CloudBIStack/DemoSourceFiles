@@ -49,7 +49,7 @@
 		},
 		"lsBatchtest_properties_typeProperties_poolName": {
 			"type": "string",
-			"defaultValue": "azpool"
+			"defaultValue": "basicpool"
 		}
 	},
 	"variables": {
@@ -437,8 +437,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lsBatchtest')]",
-				"[concat(variables('factoryId'), '/linkedServices/lsADL')]"
+				"[concat(variables('factoryId'), '/linkedServices/lsADL')]",
+				"[concat(variables('factoryId'), '/linkedServices/lsBatchtest')]"
 			]
 		},
 		{
