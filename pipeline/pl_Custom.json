@@ -41,7 +41,7 @@
 								}
 							},
 							"linkedServiceName": {
-								"referenceName": "lsBatchdemo",
+								"referenceName": "lsBatchtest",
 								"type": "LinkedServiceReference"
 							}
 						}
