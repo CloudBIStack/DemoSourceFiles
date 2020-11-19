@@ -27,6 +27,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessKey' of 'lsBatchtest'"
 		},
+		"lsBatchdemo_accessKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessKey' of 'lsBatchdemo'"
+		},
 		"lsAzureBatch_properties_typeProperties_accountName": {
 			"type": "string",
 			"defaultValue": "azbatch21"
@@ -50,6 +54,18 @@
 		"lsBatchtest_properties_typeProperties_poolName": {
 			"type": "string",
 			"defaultValue": "hasini"
+		},
+		"lsBatchdemo_properties_typeProperties_accountName": {
+			"type": "string",
+			"defaultValue": "batchdemo"
+		},
+		"lsBatchdemo_properties_typeProperties_batchUri": {
+			"type": "string",
+			"defaultValue": "https://batchdemo.eastus2.batch.azure.com"
+		},
+		"lsBatchdemo_properties_typeProperties_poolName": {
+			"type": "string",
+			"defaultValue": "demopool"
 		}
 	},
 	"variables": {
@@ -388,6 +404,31 @@
 					},
 					"batchUri": "[parameters('lsBatchtest_properties_typeProperties_batchUri')]",
 					"poolName": "[parameters('lsBatchtest_properties_typeProperties_poolName')]",
+					"linkedServiceName": {
+						"referenceName": "lsADL",
+						"type": "LinkedServiceReference"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lsADL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/lsBatchdemo')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBatch",
+				"typeProperties": {
+					"accountName": "[parameters('lsBatchdemo_properties_typeProperties_accountName')]",
+					"accessKey": {
+						"type": "SecureString",
+						"value": "[parameters('lsBatchdemo_accessKey')]"
+					},
+					"batchUri": "[parameters('lsBatchdemo_properties_typeProperties_batchUri')]",
+					"poolName": "[parameters('lsBatchdemo_properties_typeProperties_poolName')]",
 					"linkedServiceName": {
 						"referenceName": "lsADL",
 						"type": "LinkedServiceReference"
@@ -776,6 +817,78 @@
 				"[concat(variables('factoryId'), '/datasets/dsDummy')]",
 				"[concat(variables('factoryId'), '/datasets/dssqldatelkup')]",
 				"[concat(variables('factoryId'), '/datasets/dsSQLIntermediate')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_Custom')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('values')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Custom1",
+									"type": "Custom",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"command": {
+											"value": "@concat('python cube.py ', item())",
+											"type": "Expression"
+										},
+										"resourceLinkedService": {
+											"referenceName": "lsADL",
+											"type": "LinkedServiceReference"
+										},
+										"folderPath": "democontainer/input",
+										"referenceObjects": {
+											"linkedServices": [],
+											"datasets": []
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "lsBatchdemo",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"variables": {
+					"values": {
+						"type": "Array",
+						"defaultValue": [
+							1,
+							2,
+							3,
+							4,
+							5
+						]
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lsBatchdemo')]",
+				"[concat(variables('factoryId'), '/linkedServices/lsADL')]"
 			]
 		},
 		{

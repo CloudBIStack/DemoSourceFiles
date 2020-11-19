@@ -20,6 +20,9 @@
 		"lsazsql_connectionString": {
 			"value": ""
 		},
+		"lsBatchdemo_accessKey": {
+			"value": ""
+		},
 		"lsAzureBatch_properties_typeProperties_accountName": {
 			"value": "azbatch21"
 		},
@@ -37,6 +40,15 @@
 		},
 		"lsBatchtest_properties_typeProperties_poolName": {
 			"value": "hasini"
+		},
+		"lsBatchdemo_properties_typeProperties_accountName": {
+			"value": "batchdemo"
+		},
+		"lsBatchdemo_properties_typeProperties_batchUri": {
+			"value": "https://batchdemo.eastus2.batch.azure.com"
+		},
+		"lsBatchdemo_properties_typeProperties_poolName": {
+			"value": "demopool"
 		}
 	}
 }
