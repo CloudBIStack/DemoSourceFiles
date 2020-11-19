@@ -1,0 +1,39 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfdemo21"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/lsBatchdemo')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBatch",
+				"typeProperties": {
+					"accountName": "batchdemo",
+					"accessKey": {
+						"type": "SecureString",
+						"value": "**********"
+					},
+					"batchUri": "https://batchdemo.eastus2.batch.azure.com",
+					"poolName": "demopool1",
+					"linkedServiceName": {
+						"referenceName": "lsADL",
+						"type": "LinkedServiceReference"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

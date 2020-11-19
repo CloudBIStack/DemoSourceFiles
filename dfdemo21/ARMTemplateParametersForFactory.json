@@ -48,7 +48,7 @@
 			"value": "https://batchdemo.eastus2.batch.azure.com"
 		},
 		"lsBatchdemo_properties_typeProperties_poolName": {
-			"value": "demopool"
+			"value": "demopool1"
 		}
 	}
 }

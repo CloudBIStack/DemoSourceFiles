@@ -65,7 +65,7 @@
 		},
 		"lsBatchdemo_properties_typeProperties_poolName": {
 			"type": "string",
-			"defaultValue": "demopool"
+			"defaultValue": "demopool1"
 		}
 	},
 	"variables": {
