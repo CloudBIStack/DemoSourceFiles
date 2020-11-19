@@ -53,7 +53,8 @@
 			"values": {
 				"type": "Array",
 				"defaultValue": [
-					"[\"1\",\"2\"']"
+					"1",
+					"2"
 				]
 			}
 		},
