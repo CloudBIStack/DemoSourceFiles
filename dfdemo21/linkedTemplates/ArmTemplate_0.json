@@ -485,8 +485,8 @@
 									}
 								},
 								{
-									"name": "Append variable1",
-									"type": "AppendVariable",
+									"name": "Copy data1",
+									"type": "Copy",
 									"dependsOn": [
 										{
 											"activity": "Custom1",
@@ -495,14 +495,74 @@
 											]
 										}
 									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
-										"variableName": "output",
-										"value": {
-											"value": "@activity('Custom1').output.customOutput.mykey",
-											"type": "Expression"
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
 										}
-									}
+									},
+									"inputs": [
+										{
+											"referenceName": "dsJulianFile",
+											"type": "DatasetReference",
+											"parameters": {
+												"FileName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "dsJulianOutput",
+											"type": "DatasetReference",
+											"parameters": {
+												"filename": {
+													"value": "@item().name",
+													"type": "Expression"
+												},
+												"foldername": {
+													"value": "@activity('Custom1').output.customOutput.mykey",
+													"type": "Expression"
+												}
+											}
+										}
+									]
 								}
 							]
 						}
@@ -518,7 +578,9 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/dsJulianInputFolder')]",
 				"[concat(variables('factoryId'), '/linkedServices/lsADL')]",
-				"[concat(variables('factoryId'), '/linkedServices/lsBatchtest')]"
+				"[concat(variables('factoryId'), '/linkedServices/lsBatchtest')]",
+				"[concat(variables('factoryId'), '/datasets/dsJulianFile')]",
+				"[concat(variables('factoryId'), '/datasets/dsJulianOutput')]"
 			]
 		},
 		{
@@ -649,7 +711,7 @@
 							"name": "Filter1"
 						}
 					],
-					"script": "parameters{\n\tjulianfilename as string\n}\nsource(output(\n\t\tcol1 as string,\n\t\tcol2 as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SrcPlaceHolder\nsource(output(\n\t\tjuliandate as integer,\n\t\tuniversaldate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select * from t_date_lkup',\n\tformat: 'query') ~> source1\nFilter1 derive(JulianDatePortionDerived = replace(substring($julianfilename,  instr($julianfilename,toString(year(toDate(currentTimestamp()))))+4),'.csv',''),\n\t\tSourceFileNameDerived = $julianfilename) ~> DerivedColumn1\nDerivedColumn1, source1 lookup(toInteger(JulianDatePortionDerived) == juliandate,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(juliandate, true),\n\tbroadcast: 'auto')~> Lookup1\nLookup1 select(mapColumn(\n\t\tSourceFileName = SourceFileNameDerived,\n\t\tdestinationfolder = universaldate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSrcPlaceHolder keyGenerate(output(SurrogateKey as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 filter(SurrogateKey==1) ~> Filter1\nSelect1 sink(input(\n\t\tsourcefilename as string,\n\t\tdestinationfoldername as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tsourcefilename = destinationfolder,\n\t\tdestinationfoldername = destinationfolder\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+					"script": "parameters{\n\tjulianfilename as string\n}\nsource(output(\n\t\tcol1 as string,\n\t\tcol2 as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SrcPlaceHolder\nsource(output(\n\t\tjuliandate as integer,\n\t\tuniversaldate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select * from t_date_lkup',\n\tformat: 'query') ~> source1\nFilter1 derive(JulianDatePortionDerived = replace(substring($julianfilename,  instr($julianfilename,toString(year(toDate(currentTimestamp()))))+4),'.csv',''),\n\t\tSourceFileNameDerived = $julianfilename) ~> DerivedColumn1\nDerivedColumn1, source1 lookup(toInteger(JulianDatePortionDerived) == juliandate,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(juliandate, true),\n\tbroadcast: 'auto')~> Lookup1\nLookup1 select(mapColumn(\n\t\tSourceFileName = SourceFileNameDerived,\n\t\tdestinationfolder = universaldate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSrcPlaceHolder keyGenerate(output(SurrogateKey as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 filter(SurrogateKey==1) ~> Filter1\nSelect1 sink(input(\n\t\tsourcefilename as string,\n\t\tdestinationfoldername as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tsourcefilename = destinationfolder,\n\t\tdestinationfoldername = destinationfolder\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
 				}
 			},
 			"dependsOn": [
@@ -707,7 +769,7 @@
 							"name": "DerivedColumn1"
 						}
 					],
-					"script": "parameters{\n\tSrcFileName as string\n}\nsource(output(\n\t\tsourcefilename as string,\n\t\toutputfolder as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource(output(\n\t\tjuliandate as integer,\n\t\tuniversaldate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SQLLkup\nFilter1stRow derive(SourceFileName = $SrcFileName,\n\t\tJulianportion1 = replace(substring($SrcFileName,  instr($SrcFileName,toString(year(toDate(currentTimestamp()))))+4),'.csv','')) ~> DerivedIdentifyJulianPortion\nDerivedColumn1, SQLLkup lookup(toInteger(JulianPortion2) == juliandate,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(juliandate, true),\n\tbroadcast: 'auto')~> Lookup1\nsource1 keyGenerate(output(Key as long),\n\tstartAt: 1L) ~> SurrogateKey\nSurrogateKey filter(Key==1) ~> Filter1stRow\nDerivedIdentifyJulianPortion derive(JulianPortion2 = substring(Julianportion1,0,instr(Julianportion1,'.')-1)) ~> DerivedColumn1\nLookup1 sink(input(\n\t\tsourcefilename as string,\n\t\tdestinationfoldername as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tsourcefilename = SourceFileName,\n\t\tdestinationfoldername = universaldate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+					"script": "parameters{\n\tSrcFileName as string\n}\nsource(output(\n\t\tsourcefilename as string,\n\t\toutputfolder as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource(output(\n\t\tjuliandate as integer,\n\t\tuniversaldate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SQLLkup\nFilter1stRow derive(SourceFileName = $SrcFileName,\n\t\tJulianportion1 = replace(substring($SrcFileName,  instr($SrcFileName,toString(year(toDate(currentTimestamp()))))+4),'.csv','')) ~> DerivedIdentifyJulianPortion\nDerivedColumn1, SQLLkup lookup(toInteger(JulianPortion2) == juliandate,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(juliandate, true),\n\tbroadcast: 'auto')~> Lookup1\nsource1 keyGenerate(output(Key as long),\n\tstartAt: 1L) ~> SurrogateKey\nSurrogateKey filter(Key==1) ~> Filter1stRow\nDerivedIdentifyJulianPortion derive(JulianPortion2 = substring(Julianportion1,0,instr(Julianportion1,'.')-1)) ~> DerivedColumn1\nLookup1 sink(input(\n\t\tsourcefilename as string,\n\t\tdestinationfoldername as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tsourcefilename = SourceFileName,\n\t\tdestinationfoldername = universaldate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
 				}
 			},
 			"dependsOn": [
