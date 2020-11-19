@@ -11,6 +11,9 @@
 		"lsAzureBatch_accessKey": {
 			"value": ""
 		},
+		"lsBatchdemo_accessKey": {
+			"value": ""
+		},
 		"lsBatchtest_accessKey": {
 			"value": ""
 		},
@@ -18,9 +21,6 @@
 			"value": ""
 		},
 		"lsazsql_connectionString": {
-			"value": ""
-		},
-		"lsBatchdemo_accessKey": {
 			"value": ""
 		},
 		"lsAzureBatch_properties_typeProperties_accountName": {
@@ -32,15 +32,6 @@
 		"lsAzureBatch_properties_typeProperties_poolName": {
 			"value": "poolhasini"
 		},
-		"lsBatchtest_properties_typeProperties_accountName": {
-			"value": "azbatch2101"
-		},
-		"lsBatchtest_properties_typeProperties_batchUri": {
-			"value": "https://azbatch2101.eastus.batch.azure.com"
-		},
-		"lsBatchtest_properties_typeProperties_poolName": {
-			"value": "hasini"
-		},
 		"lsBatchdemo_properties_typeProperties_accountName": {
 			"value": "batchdemo"
 		},
@@ -49,6 +40,15 @@
 		},
 		"lsBatchdemo_properties_typeProperties_poolName": {
 			"value": "demopool1"
+		},
+		"lsBatchtest_properties_typeProperties_accountName": {
+			"value": "azbatch2101"
+		},
+		"lsBatchtest_properties_typeProperties_batchUri": {
+			"value": "https://azbatch2101.eastus.batch.azure.com"
+		},
+		"lsBatchtest_properties_typeProperties_poolName": {
+			"value": "hasini"
 		}
 	}
 }
