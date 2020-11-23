@@ -16,6 +16,9 @@
 				"name": "destinationfoldername",
 				"type": "varchar"
 			}
-		]
+		],
+		"typeProperties": {
+			"table": "t_iris_data"
+		}
 	}
 }
