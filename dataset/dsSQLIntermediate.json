@@ -16,10 +16,6 @@
 				"name": "destinationfoldername",
 				"type": "varchar"
 			}
-		],
-		"typeProperties": {
-			"schema": "dbo",
-			"table": "t_stg_datecnv"
-		}
+		]
 	}
 }

@@ -1,0 +1,48 @@
+{
+	"name": "dsLkup",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsADL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Iris.csv",
+				"container": "democontainer"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Id",
+				"type": "String"
+			},
+			{
+				"name": "SepalLengthCm",
+				"type": "String"
+			},
+			{
+				"name": "SepalWidthCm",
+				"type": "String"
+			},
+			{
+				"name": "PetalLengthCm",
+				"type": "String"
+			},
+			{
+				"name": "PetalWidthCm",
+				"type": "String"
+			},
+			{
+				"name": "Species",
+				"type": "String"
+			}
+		]
+	}
+}
