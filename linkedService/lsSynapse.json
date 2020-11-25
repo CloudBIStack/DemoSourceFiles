@@ -1,0 +1,12 @@
+{
+	"name": "lsSynapse",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDW",
+		"typeProperties": {
+			"connectionString": "integrated security=False;encrypt=True;connection timeout=30;data source=azsqlserver21.database.windows.net;initial catalog=azsqlpool;user id=azadmin",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRGREVNTzIxXzcwZDljNDc3LTU0NGItNGFjMy05MzZmLTJkZDdlZDM2Y2U5MSINCn0="
+		}
+	}
+}
