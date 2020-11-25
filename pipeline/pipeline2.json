@@ -41,7 +41,7 @@
 								"referenceName": "lsADL",
 								"type": "LinkedServiceReference"
 							},
-							"path": "democontainer/input"
+							"path": "democontainer"
 						}
 					},
 					"translator": {
