@@ -1,0 +1,28 @@
+{
+	"name": "dsInput",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsADL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "TOT.csv",
+				"container": "democontainer"
+			},
+			"columnDelimiter": ";",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "\"Number\";\"Original_Ticket_ID\";\"Short_Description\";\"Description\";\"Category\";\"Subcategory\";\"Priority\";\"State\";\"Assigned_To\";\"Opened\";\"Closed\";\"System_Update\";\"Correlation_ID\";\"Jira_Created\";\"Jira_Closed\";\"ResolutionTime\";\"Week\";\"Week_Num\";\"Month\";\"WeekOp\";\"WeekOpJ\";\"WeekCl\";\"WeekClJ\";\"Time_From_Opening\"",
+				"type": "String"
+			}
+		]
+	}
+}
