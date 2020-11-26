@@ -28,10 +28,307 @@
 					"sink": {
 						"type": "SqlDWSink"
 					},
-					"enableStaging": false,
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "lsADL",
+							"type": "LinkedServiceReference"
+						},
+						"path": "democontainer"
+					},
 					"enableSkipIncompatibleRow": true,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Number",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Number",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Original_Ticket_ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Original_Ticket_ID",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Short_Description",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Short_Description",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Description",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Description",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Category",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Category",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Subcategory",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Subcategory",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Priority",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Priority",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "State",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "State",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Assigned_To",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Assigned_To",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Opened",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Opened",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Closed",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Closed",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "System_Update",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "System_Update",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Correlation_ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Correlation_ID",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Jira_Created",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Jira_Created",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Jira_Closed",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Jira_Closed",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ResolutionTime",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ResolutionTime",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Week",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Week",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Week_Num",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Week_Num",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Month",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Month",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "WeekOp",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "WeekOp",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "WeekOpJ",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "WeekOpJ",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "WeekCl",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "WeekCl",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "WeekClJ",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "WeekClJ",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Time_From_Opening",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Time_From_Opening",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
