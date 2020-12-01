@@ -2,7 +2,7 @@
 	"name": "dsJulianInputFolder",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "lsBlob",
+			"referenceName": "lsADL",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"folderPath": "Input",
 				"container": "democontainer"
 			},
 			"columnDelimiter": ",",
