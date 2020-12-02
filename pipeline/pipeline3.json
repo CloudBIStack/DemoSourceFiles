@@ -15,9 +15,9 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"functionName": "HttpTrigger1",
+					"functionName": "HttpTrigger2",
 					"method": "POST",
-					"body": "{arrayvalue:5}"
+					"body": "{arrayvalue:100}"
 				},
 				"linkedServiceName": {
 					"referenceName": "AzureFunction1",
