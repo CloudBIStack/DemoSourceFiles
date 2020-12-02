@@ -18,7 +18,7 @@
 					"functionName": "HttpTrigger1",
 					"method": "POST",
 					"body": {
-						"arrayvalue": "Azure"
+						"arrayvalue": "5"
 					}
 				},
 				"linkedServiceName": {
