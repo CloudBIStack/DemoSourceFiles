@@ -23,7 +23,7 @@
 				"fileSystem": "democontainer"
 			},
 			"compression": {
-				"type": "gzip",
+				"type": "ZipDeflate",
 				"level": "Optimal"
 			}
 		}

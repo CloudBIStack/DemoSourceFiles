@@ -1,5 +1,5 @@
 {
-	"name": "pl_zip",
+	"name": "pl_unzip",
 	"properties": {
 		"activities": [
 			{
@@ -69,10 +69,15 @@
 									"type": "BinarySource",
 									"storeSettings": {
 										"type": "AzureBlobFSReadSettings",
-										"recursive": true
+										"recursive": false,
+										"deleteFilesAfterCompletion": false
 									},
 									"formatSettings": {
-										"type": "BinaryReadSettings"
+										"type": "BinaryReadSettings",
+										"compressionProperties": {
+											"type": "ZipDeflateReadSettings",
+											"preserveZipFileNameAsFolder": false
+										}
 									}
 								},
 								"sink": {
