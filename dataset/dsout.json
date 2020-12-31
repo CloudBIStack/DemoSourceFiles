@@ -10,11 +10,15 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "Output",
+				"fileName": {
+					"value": "@concat(formatDateTime(utcnow(),'MMddyyyy'),'.zip')",
+					"type": "Expression"
+				},
+				"folderPath": "Output1",
 				"fileSystem": "democontainer"
 			},
 			"columnDelimiter": ",",
-			"compressionCodec": "gzip",
+			"compressionCodec": "ZipDeflate",
 			"compressionLevel": "Optimal",
 			"escapeChar": "\\",
 			"quoteChar": "\""

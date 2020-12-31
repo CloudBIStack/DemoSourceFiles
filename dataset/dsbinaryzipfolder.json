@@ -1,5 +1,5 @@
 {
-	"name": "dsoutbin",
+	"name": "dsbinaryzipfolder",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "linkedService1",
@@ -10,11 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "ZipOutput",
+				"folderPath": "data",
 				"fileSystem": "democontainer"
-			},
-			"compression": {
-				"type": "ZipDeflate"
 			}
 		}
 	}

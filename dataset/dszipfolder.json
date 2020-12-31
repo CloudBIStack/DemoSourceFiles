@@ -1,21 +1,22 @@
 {
-	"name": "dsoutbin",
+	"name": "dszipfolder",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "linkedService1",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
-		"type": "Binary",
+		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "ZipOutput",
+				"folderPath": "data",
 				"fileSystem": "democontainer"
 			},
-			"compression": {
-				"type": "ZipDeflate"
-			}
-		}
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
 	}
 }
