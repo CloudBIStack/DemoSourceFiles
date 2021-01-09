@@ -1,0 +1,74 @@
+{
+	"name": "dsparquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "userdata1.parquet",
+				"folderPath": "Input",
+				"fileSystem": "democontainer"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "registration_dttm",
+				"type": "INT96"
+			},
+			{
+				"name": "id",
+				"type": "INT32"
+			},
+			{
+				"name": "first_name",
+				"type": "UTF8"
+			},
+			{
+				"name": "last_name",
+				"type": "UTF8"
+			},
+			{
+				"name": "email",
+				"type": "UTF8"
+			},
+			{
+				"name": "gender",
+				"type": "UTF8"
+			},
+			{
+				"name": "ip_address",
+				"type": "UTF8"
+			},
+			{
+				"name": "cc",
+				"type": "UTF8"
+			},
+			{
+				"name": "country",
+				"type": "UTF8"
+			},
+			{
+				"name": "birthdate",
+				"type": "UTF8"
+			},
+			{
+				"name": "salary",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "title",
+				"type": "UTF8"
+			},
+			{
+				"name": "comments",
+				"type": "UTF8"
+			}
+		]
+	}
+}

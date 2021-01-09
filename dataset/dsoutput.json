@@ -1,0 +1,20 @@
+{
+	"name": "dsoutput",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Output",
+				"fileSystem": "democontainer"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
