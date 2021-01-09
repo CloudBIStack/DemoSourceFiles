@@ -1,0 +1,22 @@
+{
+	"name": "dsouttest",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "MetadataOutput",
+				"fileSystem": "democontainer"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
