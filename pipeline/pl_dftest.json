@@ -67,7 +67,7 @@
 									"type": "DataFlowReference",
 									"parameters": {
 										"filenameparam": {
-											"value": "'@{item().name}'",
+											"value": "@concat('democontainer/ref/',item().name)",
 											"type": "Expression"
 										}
 									},
