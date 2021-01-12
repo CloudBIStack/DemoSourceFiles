@@ -61,7 +61,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Filter1",
+						"activity": "Set variable2",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -70,7 +70,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup1').output.Value",
+						"value": "@variables('sheetnamearray')",
 						"type": "Expression"
 					},
 					"activities": [
@@ -89,11 +89,34 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "Set variable2",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Filter1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "sheetnamearray",
+					"value": {
+						"value": "@activity('Filter1').output.Value.SheetName\n",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
 			"test": {
 				"type": "String"
+			},
+			"sheetnamearray": {
+				"type": "Array"
 			}
 		},
 		"annotations": []
