@@ -105,7 +105,7 @@
 				"typeProperties": {
 					"variableName": "sheetnamearray",
 					"value": {
-						"value": "@activity('Filter1').output.Value.SheetName\n",
+						"value": "@activity('Filter1').output.Value['SheetName']\n",
 						"type": "Expression"
 					}
 				}
