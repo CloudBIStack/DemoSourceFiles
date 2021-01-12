@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "pipeline1_copy1",
 	"properties": {
 		"activities": [
 			{
@@ -52,60 +52,6 @@
 					},
 					"condition": {
 						"value": "@equals(item().FileName,'2.xlsx')",
-						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "ForEach1",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Set variable2",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@variables('sheetnamearray')",
-						"type": "Expression"
-					},
-					"activities": [
-						{
-							"name": "Set variable1",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "test",
-								"value": {
-									"value": "@item()",
-									"type": "Expression"
-								}
-							}
-						}
-					]
-				}
-			},
-			{
-				"name": "Set variable2",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Filter1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "sheetnamearray",
-					"value": {
-						"value": "@split(activity('Filter1').output.Value[0]['SheetName'],',')",
 						"type": "Expression"
 					}
 				}
