@@ -1,0 +1,35 @@
+{
+	"name": "pl_arraytostring",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipedstr",
+					"value": {
+						"value": "@join(variables('strarray'),'|')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"strarray": {
+				"type": "Array",
+				"defaultValue": [
+					"Happy",
+					"New",
+					"Year",
+					"2021"
+				]
+			},
+			"pipedstr": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
