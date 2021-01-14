@@ -52,7 +52,7 @@
 					},
 					"fieldList": [
 						{
-							"value": "@contains('Child Items','File')",
+							"value": "@contains('Child Items','File1.txt')",
 							"type": "Expression"
 						}
 					],
