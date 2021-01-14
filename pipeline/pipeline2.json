@@ -51,10 +51,14 @@
 						"type": "DatasetReference"
 					},
 					"fieldList": [
-						"childItems"
+						{
+							"value": "@contains('Child Items','File')",
+							"type": "Expression"
+						}
 					],
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
