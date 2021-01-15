@@ -21,7 +21,7 @@
 				},
 				"fileSystem": "democontainer"
 			},
-			"columnDelimiter": ",",
+			"columnDelimiter": "\t",
 			"escapeChar": "\\",
 			"quoteChar": "\""
 		},
