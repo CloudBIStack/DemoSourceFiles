@@ -1,0 +1,42 @@
+{
+	"name": "Fixed Width Data Flow Pipeline",
+	"properties": {
+		"description": "This is an example of creating a data flow to process fixed-width text files",
+		"activities": [
+			{
+				"name": "fixedwidth",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Fixed Width",
+						"type": "DataFlowReference",
+						"parameters": {
+							"Field1": "'1,7'",
+							"Field2": "'8,8'",
+							"Field3": "'15,10'",
+							"Field4": "'25,11'",
+							"Field5": "'36,10'",
+							"Field6": "'46,12'",
+							"Field7": "'58,1'"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
