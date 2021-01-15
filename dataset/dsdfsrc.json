@@ -1,35 +1,21 @@
 {
-	"name": "dsfixedlen",
+	"name": "dsdfsrc",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "lsadls",
 			"type": "LinkedServiceReference"
-		},
-		"parameters": {
-			"FileNameDSParam": {
-				"type": "string"
-			}
 		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": {
-					"value": "@dataset().FileNameDSParam",
-					"type": "Expression"
-				},
-				"folderPath": "Input",
 				"fileSystem": "democontainer"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"type": "String"
-			}
-		]
+		"schema": []
 	}
 }
