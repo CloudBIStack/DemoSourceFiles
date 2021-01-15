@@ -22,7 +22,8 @@
 						"parameters": {
 							"Sno": "'1,7'",
 							"Name": "'8,8'",
-							"Age": "'15,10'"
+							"Age": "'15,10'",
+							"TwitterFollowers": "'9,5'"
 						}
 					},
 					"compute": {
