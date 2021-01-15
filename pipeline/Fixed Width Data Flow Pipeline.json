@@ -20,13 +20,9 @@
 						"referenceName": "Fixed Width",
 						"type": "DataFlowReference",
 						"parameters": {
-							"Field1": "'1,7'",
-							"Field2": "'8,8'",
-							"Field3": "'15,10'",
-							"Field4": "'25,11'",
-							"Field5": "'36,10'",
-							"Field6": "'46,12'",
-							"Field7": "'58,1'"
+							"Sno": "'1,7'",
+							"Name": "'8,8'",
+							"Age": "'15,10'"
 						}
 					},
 					"compute": {
