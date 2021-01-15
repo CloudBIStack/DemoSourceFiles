@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "FixedtoCSV.csv",
 				"folderPath": "output/mydataflow123partfiles",
 				"container": "mycontainer"
 			},
