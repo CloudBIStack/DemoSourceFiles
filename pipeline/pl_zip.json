@@ -84,7 +84,10 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "dataflow8",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"parameter1": "filename_additional"
+						}
 					},
 					"compute": {
 						"coreCount": 8,
