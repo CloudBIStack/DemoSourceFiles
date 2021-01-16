@@ -14,7 +14,10 @@
 					"value": "@concat(formatDateTime(utcnow(),'MMddyyyy'),'.zip')",
 					"type": "Expression"
 				},
-				"folderPath": "Output1",
+				"folderPath": {
+					"value": "if(contains($$FileName,'File1.txt','File1'))",
+					"type": "Expression"
+				},
 				"fileSystem": "democontainer"
 			},
 			"columnDelimiter": ",",
