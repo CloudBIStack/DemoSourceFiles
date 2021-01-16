@@ -22,7 +22,7 @@
 				}
 			],
 			"transformations": [],
-			"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tmoveFiles: ['\\'Input/*.txt\\'',(toString(currentDate(),'MM_dd_yyyy'))],\n\trowUrlColumn: 'filename_additional',\n\twildcardPaths:[('Input/*.txt')]) ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[''],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+			"script": "parameters{\n\tparameter1 as string (filename_additional)\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tmoveFiles: ['\\'Input/*.txt\\'',(toString(currentDate(),'MM_dd_yyyy'))],\n\trowUrlColumn: 'filename_additional',\n\twildcardPaths:[('Input/*.txt')]) ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[($parameter1)],\n\tmapColumn(\n\t\tfilename_additional\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
 		}
 	}
 }
