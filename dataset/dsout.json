@@ -2,7 +2,7 @@
 	"name": "dsout",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "linkedService1",
+			"referenceName": "lsadls",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
