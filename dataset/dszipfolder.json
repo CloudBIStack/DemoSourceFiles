@@ -2,7 +2,7 @@
 	"name": "dszipfolder",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "linkedService1",
+			"referenceName": "lsadls",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
