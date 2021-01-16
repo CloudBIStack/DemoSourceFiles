@@ -19,8 +19,8 @@
 						"type": "DelimitedTextSource",
 						"additionalColumns": [
 							{
-								"name": "SinkFolder",
-								"value": ""
+								"name": "FileName",
+								"value": "$$FILEPATH"
 							}
 						],
 						"storeSettings": {
