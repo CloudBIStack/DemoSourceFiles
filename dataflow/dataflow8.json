@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "dsdfref",
+						"referenceName": "dszipfolder",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
@@ -22,7 +22,7 @@
 				}
 			],
 			"transformations": [],
-			"script": "parameters{\n\tfilenameparam as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:[(concat('Output/ref/',$filenameparam))]) ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat(toString(currentDate()),'/$filenameparam'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+			"script": "parameters{\n\tfilenameparam as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tmoveFiles: ['\\'Input/*.txt\\'',(toString(currentDate(),'MM_dd_yyyy'))],\n\twildcardPaths:[('Input/*.txt')]) ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat(toString(currentDate()),'/$filenameparam'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
 		}
 	}
 }
