@@ -96,6 +96,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -121,7 +122,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@equals(activity('Get Metadata1').output.childItems[0],'File')",
+						"value": "@equals(activity('Get Metadata1').output.items[1],'File')",
 						"type": "Expression"
 					}
 				}
