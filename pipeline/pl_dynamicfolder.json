@@ -207,7 +207,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"foldername": {
-											"value": "@if(equals(item().name,'File1.txt'),'File1Folder','File2Folder')",
+											"value": "@if(equals(item().name,'file1.txt'),'File1Folder','File2Folder')",
 											"type": "Expression"
 										}
 									}
