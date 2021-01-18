@@ -10,10 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": {
-					"value": "@concat(formatDateTime(utcnow(),'MMddyyyy'),'.zip')",
-					"type": "Expression"
-				},
 				"fileSystem": "democontainer"
 			},
 			"columnDelimiter": ",",
