@@ -121,7 +121,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@endswith(activity('Get Metadata1').output.childItems.[0],'.txt')",
+						"value": "@equals(activity('Get Metadata1').output.childItems[0],'File')",
 						"type": "Expression"
 					}
 				}
