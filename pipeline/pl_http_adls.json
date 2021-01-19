@@ -36,7 +36,7 @@
 						"formatSettings": {
 							"type": "DelimitedTextWriteSettings",
 							"quoteAllText": true,
-							"fileExtension": ""
+							"fileExtension": "''"
 						}
 					},
 					"enableStaging": false,
@@ -155,13 +155,7 @@
 				"outputs": [
 					{
 						"referenceName": "dscontainerhttp",
-						"type": "DatasetReference",
-						"parameters": {
-							"filename": {
-								"value": "name",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			}
