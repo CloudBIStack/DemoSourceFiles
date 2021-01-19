@@ -8,7 +8,7 @@
 		"annotations": [],
 		"type": "Excel",
 		"typeProperties": {
-			"sheetName": "*",
+			"sheetName": "",
 			"location": {
 				"type": "HttpServerLocation",
 				"relativeUrl": "file_example_XLSX_5000.xlsx"
