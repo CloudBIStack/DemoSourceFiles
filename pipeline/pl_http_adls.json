@@ -19,7 +19,8 @@
 						"type": "ExcelSource",
 						"storeSettings": {
 							"type": "HttpReadSettings",
-							"requestMethod": "GET"
+							"requestMethod": "GET",
+							"requestTimeout": ""
 						}
 					},
 					"sink": {
