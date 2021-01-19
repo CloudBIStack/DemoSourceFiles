@@ -12,6 +12,7 @@
 				"type": "HttpServerLocation",
 				"relativeUrl": "file_example_XLSX_5000.xlsx"
 			},
+			"sheetIndex": 0,
 			"firstRowAsHeader": true
 		},
 		"schema": [
