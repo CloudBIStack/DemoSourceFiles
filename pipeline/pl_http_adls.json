@@ -36,7 +36,7 @@
 						"formatSettings": {
 							"type": "DelimitedTextWriteSettings",
 							"quoteAllText": true,
-							"fileExtension": "''"
+							"fileExtension": " "
 						}
 					},
 					"enableStaging": false,
