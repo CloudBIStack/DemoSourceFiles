@@ -5,20 +5,11 @@
 			"referenceName": "lsadls",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"folder": {
-				"type": "string"
-			}
-		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": {
-					"value": "@dataset().folder",
-					"type": "Expression"
-				},
 				"fileSystem": "democontainer"
 			},
 			"columnDelimiter": ",",
