@@ -56,7 +56,13 @@
 				"outputs": [
 					{
 						"referenceName": "dsdynamic",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"folder": {
+								"value": "@concat(formatDateTime(utcnow(),'YYYY'),formatDateTime(utcnow(),'MM'),formatDateTime(utcnow(),'dd'))",
+								"type": "Expression"
+							}
+						}
 					}
 				]
 			}
