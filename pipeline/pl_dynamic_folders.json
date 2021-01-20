@@ -59,7 +59,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"folder": {
-								"value": "@concat(formatDateTime(utcnow(),'YYYY'),formatDateTime(utcnow(),'MM'),formatDateTime(utcnow(),'dd'))",
+								"value": "@concat(formatDateTime(utcnow(),'yyyy'),'/',formatDateTime(utcnow(),'MM'),'/',formatDateTime(utcnow(),'dd'),'/')",
 								"type": "Expression"
 							}
 						}
