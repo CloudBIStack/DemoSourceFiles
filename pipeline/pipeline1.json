@@ -128,7 +128,13 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "PowerQuery1",
+						"type": "DataFlowReference"
+					}
+				}
 			}
 		],
 		"variables": {
