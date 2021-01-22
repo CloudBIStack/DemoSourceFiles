@@ -61,7 +61,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Set variable2",
+						"activity": "Power Query1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -109,6 +109,26 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "Power Query1",
+				"type": "ExecuteWranglingDataflow",
+				"dependsOn": [
+					{
+						"activity": "Set variable2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": []
 			}
 		],
 		"variables": {
