@@ -1,0 +1,21 @@
+{
+	"name": "dspar",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Test.parquet",
+				"folderPath": "2021",
+				"fileSystem": "democontainer"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
