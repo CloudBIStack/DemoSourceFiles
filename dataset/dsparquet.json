@@ -10,8 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "userdata1.parquet",
-				"folderPath": "Input",
+				"fileName": "test.parquet",
+				"folderPath": "2021",
 				"fileSystem": "democontainer"
 			},
 			"compressionCodec": "snappy"
