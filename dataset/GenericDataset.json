@@ -1,10 +1,6 @@
 {
 	"name": "GenericDataset",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "linkedService1",
-			"type": "LinkedServiceReference"
-		},
 		"parameters": {
 			"Folder": {
 				"type": "string"

@@ -2,7 +2,7 @@
 	"name": "dsproduct",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzureDataLakeStorage1",
+			"referenceName": "lsadl",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
