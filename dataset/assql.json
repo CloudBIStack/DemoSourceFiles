@@ -1,0 +1,101 @@
+{
+	"name": "assql",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsazsql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "sno",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Region",
+				"type": "varchar"
+			},
+			{
+				"name": "Country",
+				"type": "varchar"
+			},
+			{
+				"name": "Item Type",
+				"type": "varchar"
+			},
+			{
+				"name": "Sales Channel",
+				"type": "varchar"
+			},
+			{
+				"name": "Order Priority",
+				"type": "varchar"
+			},
+			{
+				"name": "Order Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Order ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Ship Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Units Sold",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Unit Price",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Unit Cost",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Total Revenue",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Total Cost",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Total Profit",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "iscurrent",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "StartDate",
+				"type": "date"
+			},
+			{
+				"name": "EndDate",
+				"type": "date"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "t_Product_Sales"
+		}
+	}
+}
