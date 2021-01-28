@@ -1,0 +1,402 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adfdemo21"
+		},
+		"lsadl_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'lsadl'"
+		},
+		"lsazsql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'lsazsql'"
+		},
+		"lsadl_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://saadl.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/lsadl')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('lsadl_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('lsadl_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/lsazsql')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('lsazsql_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/assql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lsazsql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "sno",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Region",
+						"type": "varchar"
+					},
+					{
+						"name": "Country",
+						"type": "varchar"
+					},
+					{
+						"name": "Item Type",
+						"type": "varchar"
+					},
+					{
+						"name": "Sales Channel",
+						"type": "varchar"
+					},
+					{
+						"name": "Order Priority",
+						"type": "varchar"
+					},
+					{
+						"name": "Order Date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Order ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Ship Date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Units Sold",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Unit Price",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Unit Cost",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Total Revenue",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Total Cost",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Total Profit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "iscurrent",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "StartDate",
+						"type": "date"
+					},
+					{
+						"name": "EndDate",
+						"type": "date"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "t_Product_Sales"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lsazsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsout')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lsadl",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "democontainer"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lsadl')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsproduct')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lsadl",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "SalesData.csv",
+						"fileSystem": "democontainer"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Sno",
+						"type": "String"
+					},
+					{
+						"name": "Region",
+						"type": "String"
+					},
+					{
+						"name": "Country",
+						"type": "String"
+					},
+					{
+						"name": "Item Type",
+						"type": "String"
+					},
+					{
+						"name": "Sales Channel",
+						"type": "String"
+					},
+					{
+						"name": "Order Priority",
+						"type": "String"
+					},
+					{
+						"name": "Order Date",
+						"type": "String"
+					},
+					{
+						"name": "Order ID",
+						"type": "String"
+					},
+					{
+						"name": "Ship Date",
+						"type": "String"
+					},
+					{
+						"name": "Units Sold",
+						"type": "String"
+					},
+					{
+						"name": "Unit Price",
+						"type": "String"
+					},
+					{
+						"name": "Unit Cost",
+						"type": "String"
+					},
+					{
+						"name": "Total Revenue",
+						"type": "String"
+					},
+					{
+						"name": "Total Cost",
+						"type": "String"
+					},
+					{
+						"name": "Total Profit",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lsadl')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow7')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dsproduct",
+								"type": "DatasetReference"
+							},
+							"name": "csvsrc"
+						},
+						{
+							"dataset": {
+								"referenceName": "assql",
+								"type": "DatasetReference"
+							},
+							"name": "sqlsrc"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "assql",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "dsout",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "TypeCast"
+						},
+						{
+							"name": "LookupSno"
+						},
+						{
+							"name": "condsplit"
+						},
+						{
+							"name": "renamesqlcols"
+						},
+						{
+							"name": "renamecsvcols"
+						},
+						{
+							"name": "DerivedColumn1"
+						},
+						{
+							"name": "Select1"
+						},
+						{
+							"name": "Select2"
+						}
+					],
+					"script": "source(output(\n\t\tSno as string,\n\t\tRegion as string,\n\t\tCountry as string,\n\t\t{Item Type} as string,\n\t\t{Sales Channel} as string,\n\t\t{Order Priority} as string,\n\t\t{Order Date} as string,\n\t\t{Order ID} as string,\n\t\t{Ship Date} as string,\n\t\t{Units Sold} as string,\n\t\t{Unit Price} as string,\n\t\t{Unit Cost} as string,\n\t\t{Total Revenue} as string,\n\t\t{Total Cost} as string,\n\t\t{Total Profit} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> csvsrc\nsource(output(\n\t\tsno as integer,\n\t\tRegion as string,\n\t\tCountry as string,\n\t\t{Item Type} as string,\n\t\t{Sales Channel} as string,\n\t\t{Order Priority} as string,\n\t\t{Order Date} as timestamp,\n\t\t{Order ID} as string,\n\t\t{Ship Date} as timestamp,\n\t\t{Units Sold} as double,\n\t\t{Unit Price} as double,\n\t\t{Unit Cost} as double,\n\t\t{Total Revenue} as double,\n\t\t{Total Cost} as double,\n\t\t{Total Profit} as double,\n\t\tiscurrent as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sqlsrc\ncsvsrc derive(Sno = toInteger(Sno),\n\t\teach(match(startsWith(name,'Total')), $$ = toDouble($$)),\n\t\teach(match(startsWith(name,'Unit')), $$ = toDouble($$)),\n\t\teach(match(endsWith(name,'Date')), $$ = toDate($$))) ~> TypeCast\nrenamecsvcols, renamesqlcols lookup(csvSno == sqlsno,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupSno\nLookupSno split(sqlsno!=csvSno,\n\tdisjoint: false) ~> condsplit@(INSERT, UPDATE)\nsqlsrc select(mapColumn(\n\t\tsqlsno = sno,\n\t\tsqlRegion = Region,\n\t\tsqlCountry = Country,\n\t\t{sqlItem Type} = {Item Type},\n\t\t{sqlSales Channel} = {Sales Channel},\n\t\t{sqlOrder Priority} = {Order Priority},\n\t\t{sqlOrder Date} = {Order Date},\n\t\t{sqlOrder ID} = {Order ID},\n\t\t{sqlShip Date} = {Ship Date},\n\t\t{sqlUnits Sold} = {Units Sold},\n\t\t{sqlUnit Price} = {Unit Price},\n\t\t{sqlUnit Cost} = {Unit Cost},\n\t\t{sqlTotal Revenue} = {Total Revenue},\n\t\t{sqlTotal Cost} = {Total Cost},\n\t\t{sqlTotal Profit} = {Total Profit},\n\t\tiscurrent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> renamesqlcols\nTypeCast select(mapColumn(\n\t\tcsvSno = Sno,\n\t\tcsvRegion = Region,\n\t\tcsvCountry = Country,\n\t\t{csvItem Type} = {Item Type},\n\t\t{csvSales Channel} = {Sales Channel},\n\t\t{csvOrder Priority} = {Order Priority},\n\t\t{csvOrder Date} = {Order Date},\n\t\t{csvOrder ID} = {Order ID},\n\t\t{csvShip Date} = {Ship Date},\n\t\t{csvUnits Sold} = {Units Sold},\n\t\t{csvUnit Price} = {Unit Price},\n\t\t{csvUnit Cost} = {Unit Cost},\n\t\t{csvTotal Revenue} = {Total Revenue},\n\t\t{csvTotal Cost} = {Total Cost},\n\t\t{csvTotal Profit} = {Total Profit}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> renamecsvcols\nSelect1 derive(iscurrent = 1) ~> DerivedColumn1\ncondsplit@INSERT select(mapColumn(\n\t\tcsvSno,\n\t\tcsvRegion,\n\t\tcsvCountry,\n\t\t{csvItem Type},\n\t\t{csvSales Channel},\n\t\t{csvOrder Priority},\n\t\t{csvOrder Date},\n\t\t{csvOrder ID},\n\t\t{csvShip Date},\n\t\t{csvUnits Sold},\n\t\t{csvUnit Price},\n\t\t{csvUnit Cost},\n\t\t{csvTotal Revenue},\n\t\t{csvTotal Cost},\n\t\t{csvTotal Profit}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\ncondsplit@UPDATE select(mapColumn(\n\t\tcsvSno,\n\t\tcsvRegion,\n\t\t{csvItem Type},\n\t\t{csvSales Channel},\n\t\t{csvOrder Priority},\n\t\t{csvOrder Date},\n\t\t{csvOrder ID},\n\t\t{csvShip Date},\n\t\t{csvUnits Sold},\n\t\t{csvUnit Price},\n\t\t{csvUnit Cost},\n\t\t{csvTotal Revenue},\n\t\t{csvTotal Cost},\n\t\t{csvTotal Profit}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nDerivedColumn1 sink(input(\n\t\tsno as integer,\n\t\tRegion as string,\n\t\tCountry as string,\n\t\t{Item Type} as string,\n\t\t{Sales Channel} as string,\n\t\t{Order Priority} as string,\n\t\t{Order Date} as timestamp,\n\t\t{Order ID} as string,\n\t\t{Ship Date} as timestamp,\n\t\t{Units Sold} as double,\n\t\t{Unit Price} as double,\n\t\t{Unit Cost} as double,\n\t\t{Total Revenue} as double,\n\t\t{Total Cost} as double,\n\t\t{Total Profit} as double,\n\t\tiscurrent as integer,\n\t\tStartDate as date,\n\t\tEndDate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tsno = csvSno,\n\t\tRegion = csvRegion,\n\t\tCountry = csvCountry,\n\t\t{Item Type} = {csvItem Type},\n\t\t{Sales Channel} = {csvSales Channel},\n\t\t{Order Priority} = {csvOrder Priority},\n\t\t{Order Date} = {csvOrder Date},\n\t\t{Order ID} = {csvOrder ID},\n\t\t{Ship Date} = {csvShip Date},\n\t\t{Units Sold} = {csvUnits Sold},\n\t\t{Unit Price} = {csvUnit Price},\n\t\t{Unit Cost} = {csvUnit Cost},\n\t\t{Total Revenue} = {csvTotal Revenue},\n\t\t{Total Cost} = {csvTotal Cost},\n\t\t{Total Profit} = {csvTotal Profit},\n\t\tiscurrent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nSelect2 sink(input(\n\t\tColumn_1 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink2"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dsproduct')]",
+				"[concat(variables('factoryId'), '/datasets/assql')]",
+				"[concat(variables('factoryId'), '/datasets/dsout')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_scd2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow7",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"csvsrc": {},
+									"sqlsrc": {},
+									"sink1": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "None"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow7')]"
+			]
+		}
+	]
+}

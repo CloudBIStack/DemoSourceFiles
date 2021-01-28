@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adfdemo21"
+		},
+		"lsadl_accountKey": {
+			"value": ""
+		},
+		"lsazsql_connectionString": {
+			"value": ""
+		},
+		"lsadl_properties_typeProperties_url": {
+			"value": "https://saadl.dfs.core.windows.net"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
