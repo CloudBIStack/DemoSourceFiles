@@ -20,7 +20,7 @@
 						"type": "DataFlowReference"
 					},
 					"compute": {
-						"coreCount": 48,
+						"coreCount": 8,
 						"computeType": "General"
 					},
 					"traceLevel": "Fine"
