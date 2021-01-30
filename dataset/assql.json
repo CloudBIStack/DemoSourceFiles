@@ -23,7 +23,8 @@
 			},
 			{
 				"name": "isactive",
-				"type": "char"
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "startdate",
