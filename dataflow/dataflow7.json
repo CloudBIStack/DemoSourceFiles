@@ -19,7 +19,15 @@
 					"name": "sql"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "assql",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "LookupPrimaryKey"
@@ -31,10 +39,13 @@
 					"name": "RenameCols"
 				},
 				{
-					"name": "Select1"
+					"name": "DropSQLCols"
+				},
+				{
+					"name": "isactive"
 				}
 			],
-			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as string,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\ncsv, RenameCols lookup(id == sql_id,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupPrimaryKey\nLookupPrimaryKey split(csv@id!=sql@id,\n\tdisjoint: false) ~> InsertorUpdate@(InsertStream, UpdateStream)\nsql select(mapColumn(\n\t\tsql_id = id,\n\t\tsql_name = name,\n\t\tsql_dept = dept,\n\t\tsql_isactive = isactive,\n\t\tsql_startdate = startdate,\n\t\tsql_enddate = enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenameCols\nInsertorUpdate@InsertStream select(mapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate,\n\t\tenddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1"
+			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as string,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\ncsv, RenameCols lookup(id == sql_id,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupPrimaryKey\nLookupPrimaryKey split(csv@id!=sql@id,\n\tdisjoint: false) ~> InsertorUpdate@(InsertStream, UpdateStream)\nsql select(mapColumn(\n\t\tsql_id = id,\n\t\tsql_name = name,\n\t\tsql_dept = dept,\n\t\tsql_isactive = isactive,\n\t\tsql_startdate = startdate,\n\t\tsql_enddate = enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenameCols\nInsertorUpdate@InsertStream select(mapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate,\n\t\tenddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropSQLCols\nDropSQLCols derive(isactive = 1) ~> isactive\nisactive sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as string,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate,\n\t\tenddate,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
 		}
 	}
 }
