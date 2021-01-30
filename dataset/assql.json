@@ -95,7 +95,7 @@
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "t_Product_Sales"
+			"table": "t_dim_employee"
 		}
 	}
 }
