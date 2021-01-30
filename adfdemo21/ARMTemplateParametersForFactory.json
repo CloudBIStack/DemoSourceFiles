@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "adfdemo21"
 		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
 		"lsadl_accountKey": {
 			"value": ""
 		},

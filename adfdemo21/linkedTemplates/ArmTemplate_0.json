@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adfdemo21"
 		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
 		"lsadl_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'lsadl'"
@@ -24,6 +28,19 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/lsadl')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -55,6 +72,135 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DimEmp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lsazsql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "EmpID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "surrogatekey",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Region",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "EmpFunction",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Level",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Role",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StartDate",
+						"type": "date"
+					},
+					{
+						"name": "EndDate",
+						"type": "date"
+					},
+					{
+						"name": "iscurrent",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "processtime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"tableName": "[[dbo].[DimEmp]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lsazsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EmployeeFiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "mycontainer"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "EmpID",
+						"type": "String"
+					},
+					{
+						"name": "Region",
+						"type": "String"
+					},
+					{
+						"name": "Status",
+						"type": "String"
+					},
+					{
+						"name": "Function",
+						"type": "String"
+					},
+					{
+						"name": "Level",
+						"type": "String"
+					},
+					{
+						"name": "Role",
+						"type": "String"
+					},
+					{
+						"name": "StartDate",
+						"type": "String"
+					},
+					{
+						"name": "EndDate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/assql')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -67,97 +213,66 @@
 				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"name": "sno",
+						"name": "id",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "Region",
+						"name": "name",
 						"type": "varchar"
 					},
 					{
-						"name": "Country",
+						"name": "dept",
 						"type": "varchar"
 					},
 					{
-						"name": "Item Type",
-						"type": "varchar"
-					},
-					{
-						"name": "Sales Channel",
-						"type": "varchar"
-					},
-					{
-						"name": "Order Priority",
-						"type": "varchar"
-					},
-					{
-						"name": "Order Date",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "Order ID",
-						"type": "varchar"
-					},
-					{
-						"name": "Ship Date",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "Units Sold",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "Unit Price",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "Unit Cost",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "Total Revenue",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "Total Cost",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "Total Profit",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "iscurrent",
+						"name": "isactive",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "StartDate",
+						"name": "startdate",
 						"type": "date"
 					},
 					{
-						"name": "EndDate",
+						"name": "enddate",
 						"type": "date"
 					}
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "t_Product_Sales"
+					"table": "t_dim_employee"
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/lsazsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsemployee')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lsadl",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "democontainer"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lsadl')]"
 			]
 		},
 		{
@@ -174,6 +289,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
+						"folderPath": "scd",
 						"fileSystem": "democontainer"
 					},
 					"columnDelimiter": ",",
@@ -280,6 +396,108 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DimEmployeeLoader2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "EmployeeFiles",
+								"type": "DatasetReference"
+							},
+							"name": "Employees1",
+							"description": " Source employees file, changes every day"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimEmp",
+								"type": "DatasetReference"
+							},
+							"name": "DimEmployees",
+							"description": "Current rows in DimEmployees DW table"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimEmp",
+								"type": "DatasetReference"
+							},
+							"name": "sinkNew",
+							"description": " "
+						},
+						{
+							"dataset": {
+								"referenceName": "DimEmp",
+								"type": "DatasetReference"
+							},
+							"name": "sinkUpdates",
+							"description": " "
+						},
+						{
+							"dataset": {
+								"referenceName": "DimEmp",
+								"type": "DatasetReference"
+							},
+							"name": "sinkInactive",
+							"description": " Age out old rows"
+						}
+					],
+					"transformations": [
+						{
+							"name": "TypeConversions"
+						},
+						{
+							"name": "TypeConversionsAndSetAttrs"
+						},
+						{
+							"name": "LookupIDs"
+						},
+						{
+							"name": "ConditionalSplit1"
+						},
+						{
+							"name": "checkForChanges"
+						},
+						{
+							"name": "SetAttrsForNew"
+						},
+						{
+							"name": "SetAttrsInactive",
+							"description": "make iscurrent 0"
+						},
+						{
+							"name": "SetAttrsUpdate"
+						},
+						{
+							"name": "NormNames"
+						},
+						{
+							"name": "InactiveFields"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "NullFilter",
+							"description": "Filter out NULLs from source file"
+						},
+						{
+							"name": "NameNorm2"
+						}
+					],
+					"script": "source(output(\n\t\tEmpID as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as string,\n\t\tEndDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tpurgeFiles: true,\n\twildcardPaths:['SampleData/Emps/today/*.csv']) ~> Employees1\nsource(output(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DimEmployees\nDimEmployees derive(EmpID = toInteger(EmpID)) ~> TypeConversions\nNullFilter derive(EmpID = toInteger(EmpID),\n\t\tStartDate = toDate(StartDate,'MM/dd/yyyy'),\n\t\tEndDate = toDate(EndDate,'MM/dd/yyyy'),\n\t\tprocesstime = currentTimestamp()) ~> TypeConversionsAndSetAttrs\nTypeConversionsAndSetAttrs, TypeConversions lookup(TypeConversionsAndSetAttrs@EmpID == TypeConversions@EmpID,\n\tmultiple: true,\n\tbroadcast: 'auto')~> LookupIDs\nNormNames split(isNull(iscurrent),\n\tdisjoint: false) ~> ConditionalSplit1@(NewRow, CheckForUpdates)\nNameNorm2, TypeConversions exists(NameNorm2@EmpID == TypeConversions@EmpID,\n\tnegate:false,\n\tbroadcast: 'auto')~> checkForChanges\nConditionalSplit1@NewRow derive(iscurrent = 1,\n\t\tsurrogatekey = toString(crc32(EmpID,EmpFunction))) ~> SetAttrsForNew\ncheckForChanges derive(iscurrent = 0) ~> SetAttrsInactive\ncheckForChanges derive(iscurrent = 1) ~> SetAttrsUpdate\nLookupIDs select(mapColumn(\n\t\tEmpID = TypeConversionsAndSetAttrs@EmpID,\n\t\tRegion = Employees1@Region,\n\t\tStatus = Employees1@Status,\n\t\tLevel = Employees1@Level,\n\t\tRole = Employees1@Role,\n\t\tStartDate = TypeConversionsAndSetAttrs@StartDate,\n\t\tEndDate = TypeConversionsAndSetAttrs@EndDate,\n\t\tEmpFunction = Function,\n\t\tiscurrent,\n\t\tprocesstime = TypeConversionsAndSetAttrs@processtime,\n\t\tsurrogatekey\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> NormNames\nSetAttrsInactive select(mapColumn(\n\t\tEmpID,\n\t\tStatus,\n\t\tEndDate,\n\t\tiscurrent,\n\t\tprocesstime\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> InactiveFields\nInactiveFields alterRow(updateIf(true())) ~> AlterRow1\nEmployees1 filter(!isNull(EmpID)) ~> NullFilter\nConditionalSplit1@CheckForUpdates select(mapColumn(\n\t\tEmpID,\n\t\tRegion,\n\t\tStatus,\n\t\tLevel,\n\t\tRole,\n\t\tStartDate,\n\t\tEndDate,\n\t\tEmpFunction,\n\t\tiscurrent,\n\t\tprocesstime,\n\t\tsurrogatekey\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> NameNorm2\nSetAttrsForNew sink(input(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tbatchSize: 50,\n\tpartitionBy('roundRobin', 4),\n\terrorHandlingOption: 'stopOnFirstError') ~> sinkNew\nSetAttrsUpdate sink(input(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tbatchSize: 50,\n\tpartitionBy('roundRobin', 4),\n\terrorHandlingOption: 'stopOnFirstError') ~> sinkUpdates\nAlterRow1 sink(input(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['EmpID'],\n\tformat: 'table',\n\tbatchSize: 50,\n\tmapColumn(\n\t\tEmpID,\n\t\tEndDate,\n\t\tiscurrent,\n\t\tprocesstime\n\t),\n\tpartitionBy('roundRobin', 4),\n\terrorHandlingOption: 'stopOnFirstError') ~> sinkInactive"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/EmployeeFiles')]",
+				"[concat(variables('factoryId'), '/datasets/DimEmp')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/dataflow7')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -289,17 +507,17 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "dsproduct",
+								"referenceName": "dsemployee",
 								"type": "DatasetReference"
 							},
-							"name": "csvsrc"
+							"name": "csv"
 						},
 						{
 							"dataset": {
 								"referenceName": "assql",
 								"type": "DatasetReference"
 							},
-							"name": "sqlsrc"
+							"name": "sql"
 						}
 					],
 					"sinks": [
@@ -308,49 +526,51 @@
 								"referenceName": "assql",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink3"
 						},
 						{
 							"dataset": {
-								"referenceName": "dsout",
+								"referenceName": "assql",
 								"type": "DatasetReference"
 							},
-							"name": "sink2"
+							"name": "sink4"
 						}
 					],
 					"transformations": [
 						{
-							"name": "TypeCast"
+							"name": "RenameCols"
 						},
 						{
-							"name": "LookupSno"
+							"name": "DropSQLCols"
 						},
 						{
-							"name": "condsplit"
+							"name": "makeitactive"
 						},
 						{
-							"name": "renamesqlcols"
+							"name": "hashsql"
 						},
 						{
-							"name": "renamecsvcols"
+							"name": "hashcsv"
 						},
 						{
-							"name": "DerivedColumn1"
+							"name": "ExistsOrNot"
 						},
 						{
-							"name": "Select1"
+							"name": "Exists1"
 						},
 						{
-							"name": "Select2"
+							"name": "makeitinactive"
+						},
+						{
+							"name": "AlterRow1"
 						}
 					],
-					"script": "source(output(\n\t\tSno as string,\n\t\tRegion as string,\n\t\tCountry as string,\n\t\t{Item Type} as string,\n\t\t{Sales Channel} as string,\n\t\t{Order Priority} as string,\n\t\t{Order Date} as string,\n\t\t{Order ID} as string,\n\t\t{Ship Date} as string,\n\t\t{Units Sold} as string,\n\t\t{Unit Price} as string,\n\t\t{Unit Cost} as string,\n\t\t{Total Revenue} as string,\n\t\t{Total Cost} as string,\n\t\t{Total Profit} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> csvsrc\nsource(output(\n\t\tsno as integer,\n\t\tRegion as string,\n\t\tCountry as string,\n\t\t{Item Type} as string,\n\t\t{Sales Channel} as string,\n\t\t{Order Priority} as string,\n\t\t{Order Date} as timestamp,\n\t\t{Order ID} as string,\n\t\t{Ship Date} as timestamp,\n\t\t{Units Sold} as double,\n\t\t{Unit Price} as double,\n\t\t{Unit Cost} as double,\n\t\t{Total Revenue} as double,\n\t\t{Total Cost} as double,\n\t\t{Total Profit} as double,\n\t\tiscurrent as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sqlsrc\ncsvsrc derive(Sno = toInteger(Sno),\n\t\teach(match(startsWith(name,'Total')), $$ = toDouble($$)),\n\t\teach(match(startsWith(name,'Unit')), $$ = toDouble($$)),\n\t\teach(match(endsWith(name,'Date')), $$ = toDate($$))) ~> TypeCast\nrenamecsvcols, renamesqlcols lookup(csvSno == sqlsno,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupSno\nLookupSno split(sqlsno!=csvSno,\n\tdisjoint: false) ~> condsplit@(INSERT, UPDATE)\nsqlsrc select(mapColumn(\n\t\tsqlsno = sno,\n\t\tsqlRegion = Region,\n\t\tsqlCountry = Country,\n\t\t{sqlItem Type} = {Item Type},\n\t\t{sqlSales Channel} = {Sales Channel},\n\t\t{sqlOrder Priority} = {Order Priority},\n\t\t{sqlOrder Date} = {Order Date},\n\t\t{sqlOrder ID} = {Order ID},\n\t\t{sqlShip Date} = {Ship Date},\n\t\t{sqlUnits Sold} = {Units Sold},\n\t\t{sqlUnit Price} = {Unit Price},\n\t\t{sqlUnit Cost} = {Unit Cost},\n\t\t{sqlTotal Revenue} = {Total Revenue},\n\t\t{sqlTotal Cost} = {Total Cost},\n\t\t{sqlTotal Profit} = {Total Profit},\n\t\tiscurrent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> renamesqlcols\nTypeCast select(mapColumn(\n\t\tcsvSno = Sno,\n\t\tcsvRegion = Region,\n\t\tcsvCountry = Country,\n\t\t{csvItem Type} = {Item Type},\n\t\t{csvSales Channel} = {Sales Channel},\n\t\t{csvOrder Priority} = {Order Priority},\n\t\t{csvOrder Date} = {Order Date},\n\t\t{csvOrder ID} = {Order ID},\n\t\t{csvShip Date} = {Ship Date},\n\t\t{csvUnits Sold} = {Units Sold},\n\t\t{csvUnit Price} = {Unit Price},\n\t\t{csvUnit Cost} = {Unit Cost},\n\t\t{csvTotal Revenue} = {Total Revenue},\n\t\t{csvTotal Cost} = {Total Cost},\n\t\t{csvTotal Profit} = {Total Profit}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> renamecsvcols\nSelect1 derive(iscurrent = 1) ~> DerivedColumn1\ncondsplit@INSERT select(mapColumn(\n\t\tcsvSno,\n\t\tcsvRegion,\n\t\tcsvCountry,\n\t\t{csvItem Type},\n\t\t{csvSales Channel},\n\t\t{csvOrder Priority},\n\t\t{csvOrder Date},\n\t\t{csvOrder ID},\n\t\t{csvShip Date},\n\t\t{csvUnits Sold},\n\t\t{csvUnit Price},\n\t\t{csvUnit Cost},\n\t\t{csvTotal Revenue},\n\t\t{csvTotal Cost},\n\t\t{csvTotal Profit}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\ncondsplit@UPDATE select(mapColumn(\n\t\tcsvSno,\n\t\tcsvRegion,\n\t\t{csvItem Type},\n\t\t{csvSales Channel},\n\t\t{csvOrder Priority},\n\t\t{csvOrder Date},\n\t\t{csvOrder ID},\n\t\t{csvShip Date},\n\t\t{csvUnits Sold},\n\t\t{csvUnit Price},\n\t\t{csvUnit Cost},\n\t\t{csvTotal Revenue},\n\t\t{csvTotal Cost},\n\t\t{csvTotal Profit}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nDerivedColumn1 sink(input(\n\t\tsno as integer,\n\t\tRegion as string,\n\t\tCountry as string,\n\t\t{Item Type} as string,\n\t\t{Sales Channel} as string,\n\t\t{Order Priority} as string,\n\t\t{Order Date} as timestamp,\n\t\t{Order ID} as string,\n\t\t{Ship Date} as timestamp,\n\t\t{Units Sold} as double,\n\t\t{Unit Price} as double,\n\t\t{Unit Cost} as double,\n\t\t{Total Revenue} as double,\n\t\t{Total Cost} as double,\n\t\t{Total Profit} as double,\n\t\tiscurrent as integer,\n\t\tStartDate as date,\n\t\tEndDate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tsno = csvSno,\n\t\tRegion = csvRegion,\n\t\tCountry = csvCountry,\n\t\t{Item Type} = {csvItem Type},\n\t\t{Sales Channel} = {csvSales Channel},\n\t\t{Order Priority} = {csvOrder Priority},\n\t\t{Order Date} = {csvOrder Date},\n\t\t{Order ID} = {csvOrder ID},\n\t\t{Ship Date} = {csvShip Date},\n\t\t{Units Sold} = {csvUnits Sold},\n\t\t{Unit Price} = {csvUnit Price},\n\t\t{Unit Cost} = {csvUnit Cost},\n\t\t{Total Revenue} = {csvTotal Revenue},\n\t\t{Total Cost} = {csvTotal Cost},\n\t\t{Total Profit} = {csvTotal Profit},\n\t\tiscurrent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nSelect2 sink(input(\n\t\tColumn_1 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink2"
+					"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\nsql select(mapColumn(\n\t\tsql_id = id,\n\t\tsql_name = name,\n\t\tsql_dept = dept,\n\t\tsql_isactive = isactive,\n\t\tsql_startdate = startdate,\n\t\tsql_enddate = enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenameCols\nExistsOrNot select(mapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropSQLCols\nDropSQLCols derive(isactive = toInteger(1),\n\t\tEndDate = toDate('9999-12-31')) ~> makeitactive\nRenameCols derive(hashref = md5(sql_id,sql_name,sql_dept)) ~> hashsql\ncsv derive(hashinput = md5(id,name,dept)) ~> hashcsv\nhashcsv, hashsql exists(hashinput == hashref,\n\tnegate:true,\n\tbroadcast: 'auto')~> ExistsOrNot\nhashsql, hashcsv exists(hashref == hashinput,\n\tnegate:false,\n\tbroadcast: 'auto')~> Exists1\nExists1 derive(sql_isactive = 0,\n\t\tsql_enddate = currentDate('MM/dd/YYYY')) ~> makeitinactive\nmakeitinactive alterRow(updateIf(true())) ~> AlterRow1\nmakeitactive sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate,\n\t\tenddate = EndDate,\n\t\tisactive\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink3\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid = sql_id,\n\t\tname = sql_name,\n\t\tdept = sql_dept,\n\t\tisactive = sql_isactive,\n\t\tstartdate = sql_startdate,\n\t\tenddate = sql_enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink4"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/dsproduct')]",
-				"[concat(variables('factoryId'), '/datasets/assql')]",
-				"[concat(variables('factoryId'), '/datasets/dsout')]"
+				"[concat(variables('factoryId'), '/datasets/dsemployee')]",
+				"[concat(variables('factoryId'), '/datasets/assql')]"
 			]
 		},
 		{
@@ -377,10 +597,10 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"csvsrc": {},
-									"sqlsrc": {},
-									"sink1": {},
-									"sink2": {}
+									"csv": {},
+									"sql": {},
+									"sink3": {},
+									"sink4": {}
 								}
 							},
 							"staging": {},
