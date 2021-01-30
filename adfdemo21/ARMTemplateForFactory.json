@@ -52,8 +52,8 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"csv": {},
 									"sql": {},
+									"source1": {},
 									"sink3": {},
 									"sink4": {}
 								}
@@ -441,108 +441,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DimEmployeeLoader2')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "EmployeeFiles",
-								"type": "DatasetReference"
-							},
-							"name": "Employees1",
-							"description": " Source employees file, changes every day"
-						},
-						{
-							"dataset": {
-								"referenceName": "DimEmp",
-								"type": "DatasetReference"
-							},
-							"name": "DimEmployees",
-							"description": "Current rows in DimEmployees DW table"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DimEmp",
-								"type": "DatasetReference"
-							},
-							"name": "sinkNew",
-							"description": " "
-						},
-						{
-							"dataset": {
-								"referenceName": "DimEmp",
-								"type": "DatasetReference"
-							},
-							"name": "sinkUpdates",
-							"description": " "
-						},
-						{
-							"dataset": {
-								"referenceName": "DimEmp",
-								"type": "DatasetReference"
-							},
-							"name": "sinkInactive",
-							"description": " Age out old rows"
-						}
-					],
-					"transformations": [
-						{
-							"name": "TypeConversions"
-						},
-						{
-							"name": "TypeConversionsAndSetAttrs"
-						},
-						{
-							"name": "LookupIDs"
-						},
-						{
-							"name": "ConditionalSplit1"
-						},
-						{
-							"name": "checkForChanges"
-						},
-						{
-							"name": "SetAttrsForNew"
-						},
-						{
-							"name": "SetAttrsInactive",
-							"description": "make iscurrent 0"
-						},
-						{
-							"name": "SetAttrsUpdate"
-						},
-						{
-							"name": "NormNames"
-						},
-						{
-							"name": "InactiveFields"
-						},
-						{
-							"name": "AlterRow1"
-						},
-						{
-							"name": "NullFilter",
-							"description": "Filter out NULLs from source file"
-						},
-						{
-							"name": "NameNorm2"
-						}
-					],
-					"script": "source(output(\n\t\tEmpID as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as string,\n\t\tEndDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tpurgeFiles: true,\n\twildcardPaths:['SampleData/Emps/today/*.csv']) ~> Employees1\nsource(output(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DimEmployees\nDimEmployees derive(EmpID = toInteger(EmpID)) ~> TypeConversions\nNullFilter derive(EmpID = toInteger(EmpID),\n\t\tStartDate = toDate(StartDate,'MM/dd/yyyy'),\n\t\tEndDate = toDate(EndDate,'MM/dd/yyyy'),\n\t\tprocesstime = currentTimestamp()) ~> TypeConversionsAndSetAttrs\nTypeConversionsAndSetAttrs, TypeConversions lookup(TypeConversionsAndSetAttrs@EmpID == TypeConversions@EmpID,\n\tmultiple: true,\n\tbroadcast: 'auto')~> LookupIDs\nNormNames split(isNull(iscurrent),\n\tdisjoint: false) ~> ConditionalSplit1@(NewRow, CheckForUpdates)\nNameNorm2, TypeConversions exists(NameNorm2@EmpID == TypeConversions@EmpID,\n\tnegate:false,\n\tbroadcast: 'auto')~> checkForChanges\nConditionalSplit1@NewRow derive(iscurrent = 1,\n\t\tsurrogatekey = toString(crc32(EmpID,EmpFunction))) ~> SetAttrsForNew\ncheckForChanges derive(iscurrent = 0) ~> SetAttrsInactive\ncheckForChanges derive(iscurrent = 1) ~> SetAttrsUpdate\nLookupIDs select(mapColumn(\n\t\tEmpID = TypeConversionsAndSetAttrs@EmpID,\n\t\tRegion = Employees1@Region,\n\t\tStatus = Employees1@Status,\n\t\tLevel = Employees1@Level,\n\t\tRole = Employees1@Role,\n\t\tStartDate = TypeConversionsAndSetAttrs@StartDate,\n\t\tEndDate = TypeConversionsAndSetAttrs@EndDate,\n\t\tEmpFunction = Function,\n\t\tiscurrent,\n\t\tprocesstime = TypeConversionsAndSetAttrs@processtime,\n\t\tsurrogatekey\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> NormNames\nSetAttrsInactive select(mapColumn(\n\t\tEmpID,\n\t\tStatus,\n\t\tEndDate,\n\t\tiscurrent,\n\t\tprocesstime\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> InactiveFields\nInactiveFields alterRow(updateIf(true())) ~> AlterRow1\nEmployees1 filter(!isNull(EmpID)) ~> NullFilter\nConditionalSplit1@CheckForUpdates select(mapColumn(\n\t\tEmpID,\n\t\tRegion,\n\t\tStatus,\n\t\tLevel,\n\t\tRole,\n\t\tStartDate,\n\t\tEndDate,\n\t\tEmpFunction,\n\t\tiscurrent,\n\t\tprocesstime,\n\t\tsurrogatekey\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> NameNorm2\nSetAttrsForNew sink(input(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tbatchSize: 50,\n\tpartitionBy('roundRobin', 4),\n\terrorHandlingOption: 'stopOnFirstError') ~> sinkNew\nSetAttrsUpdate sink(input(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tbatchSize: 50,\n\tpartitionBy('roundRobin', 4),\n\terrorHandlingOption: 'stopOnFirstError') ~> sinkUpdates\nAlterRow1 sink(input(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['EmpID'],\n\tformat: 'table',\n\tbatchSize: 50,\n\tmapColumn(\n\t\tEmpID,\n\t\tEndDate,\n\t\tiscurrent,\n\t\tprocesstime\n\t),\n\tpartitionBy('roundRobin', 4),\n\terrorHandlingOption: 'stopOnFirstError') ~> sinkInactive"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/EmployeeFiles')]",
-				"[concat(variables('factoryId'), '/datasets/DimEmp')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/dataflow7')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -552,17 +450,17 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "dsemployee",
-								"type": "DatasetReference"
-							},
-							"name": "csv"
-						},
-						{
-							"dataset": {
 								"referenceName": "assql",
 								"type": "DatasetReference"
 							},
 							"name": "sql"
+						},
+						{
+							"dataset": {
+								"referenceName": "dsemployee",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
 						}
 					],
 					"sinks": [
@@ -598,24 +496,27 @@
 							"name": "hashcsv"
 						},
 						{
-							"name": "ExistsOrNot"
+							"name": "IdentifyUpdates"
 						},
 						{
-							"name": "Exists1"
+							"name": "IdentifyObsolete"
 						},
 						{
 							"name": "makeitinactive"
 						},
 						{
 							"name": "AlterRow1"
+						},
+						{
+							"name": "Filter1"
 						}
 					],
-					"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\nsql select(mapColumn(\n\t\tsql_id = id,\n\t\tsql_name = name,\n\t\tsql_dept = dept,\n\t\tsql_isactive = isactive,\n\t\tsql_startdate = startdate,\n\t\tsql_enddate = enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenameCols\nExistsOrNot select(mapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropSQLCols\nDropSQLCols derive(isactive = toInteger(1),\n\t\tEndDate = toDate('9999-12-31')) ~> makeitactive\nRenameCols derive(hashref = md5(sql_id,sql_name,sql_dept)) ~> hashsql\ncsv derive(hashinput = md5(id,name,dept)) ~> hashcsv\nhashcsv, hashsql exists(hashinput == hashref,\n\tnegate:true,\n\tbroadcast: 'auto')~> ExistsOrNot\nhashsql, hashcsv exists(hashref == hashinput,\n\tnegate:false,\n\tbroadcast: 'auto')~> Exists1\nExists1 derive(sql_isactive = 0,\n\t\tsql_enddate = currentDate('MM/dd/YYYY')) ~> makeitinactive\nmakeitinactive alterRow(updateIf(true())) ~> AlterRow1\nmakeitactive sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate,\n\t\tenddate = EndDate,\n\t\tisactive\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink3\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid = sql_id,\n\t\tname = sql_name,\n\t\tdept = sql_dept,\n\t\tisactive = sql_isactive,\n\t\tstartdate = sql_startdate,\n\t\tenddate = sql_enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink4"
+					"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\nsource(output(\n\t\tid as short,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> source1\nFilter1 select(mapColumn(\n\t\tsql_id = id,\n\t\tsql_name = name,\n\t\tsql_dept = dept,\n\t\tsql_isactive = isactive,\n\t\tsql_startdate = startdate,\n\t\tsql_enddate = enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenameCols\nIdentifyUpdates select(mapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropSQLCols\nDropSQLCols derive(isactive = toInteger(1),\n\t\tEndDate = toDate('9999-12-31')) ~> makeitactive\nRenameCols derive(hashref = md5(sql_name,sql_dept)) ~> hashsql\nsource1 derive(hashinput = md5(name,dept)) ~> hashcsv\nhashcsv, hashsql exists(hashinput == hashref,\n\tnegate:true,\n\tbroadcast: 'auto')~> IdentifyUpdates\nhashsql, hashcsv exists(sql_id == id && hashinput!=hashref,\n\tnegate:false,\n\tbroadcast: 'auto')~> IdentifyObsolete\nIdentifyObsolete derive(sql_isactive = 0,\n\t\tsql_enddate = currentDate('MM/dd/YYYY')) ~> makeitinactive\nmakeitinactive alterRow(updateIf(true())) ~> AlterRow1\nsql filter(isactive==1) ~> Filter1\nmakeitactive sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate,\n\t\tenddate = EndDate,\n\t\tisactive\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink3\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid = sql_id,\n\t\tname = sql_name,\n\t\tdept = sql_dept,\n\t\tisactive = sql_isactive,\n\t\tstartdate = sql_startdate,\n\t\tenddate = sql_enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink4"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/dsemployee')]",
-				"[concat(variables('factoryId'), '/datasets/assql')]"
+				"[concat(variables('factoryId'), '/datasets/assql')]",
+				"[concat(variables('factoryId'), '/datasets/dsemployee')]"
 			]
 		}
 	]
