@@ -9,12 +9,26 @@
 						"referenceName": "dsemployee",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "csv"
+				},
+				{
+					"dataset": {
+						"referenceName": "assql",
+						"type": "DatasetReference"
+					},
+					"name": "sql"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
-			"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> source1"
+			"transformations": [
+				{
+					"name": "DerivedColumn1"
+				},
+				{
+					"name": "DerivedColumn2"
+				}
+			],
+			"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as string,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\nDerivedColumn2 derive() ~> DerivedColumn1\ncsv derive() ~> DerivedColumn2"
 		}
 	}
 }

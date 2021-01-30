@@ -9,87 +9,28 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "sno",
+				"name": "id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "Region",
+				"name": "name",
 				"type": "varchar"
 			},
 			{
-				"name": "Country",
+				"name": "dept",
 				"type": "varchar"
 			},
 			{
-				"name": "Item Type",
-				"type": "varchar"
+				"name": "isactive",
+				"type": "char"
 			},
 			{
-				"name": "Sales Channel",
-				"type": "varchar"
-			},
-			{
-				"name": "Order Priority",
-				"type": "varchar"
-			},
-			{
-				"name": "Order Date",
-				"type": "datetime",
-				"precision": 23,
-				"scale": 3
-			},
-			{
-				"name": "Order ID",
-				"type": "varchar"
-			},
-			{
-				"name": "Ship Date",
-				"type": "datetime",
-				"precision": 23,
-				"scale": 3
-			},
-			{
-				"name": "Units Sold",
-				"type": "float",
-				"precision": 15
-			},
-			{
-				"name": "Unit Price",
-				"type": "float",
-				"precision": 15
-			},
-			{
-				"name": "Unit Cost",
-				"type": "float",
-				"precision": 15
-			},
-			{
-				"name": "Total Revenue",
-				"type": "float",
-				"precision": 15
-			},
-			{
-				"name": "Total Cost",
-				"type": "float",
-				"precision": 15
-			},
-			{
-				"name": "Total Profit",
-				"type": "float",
-				"precision": 15
-			},
-			{
-				"name": "iscurrent",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "StartDate",
+				"name": "startdate",
 				"type": "date"
 			},
 			{
-				"name": "EndDate",
+				"name": "enddate",
 				"type": "date"
 			}
 		],
