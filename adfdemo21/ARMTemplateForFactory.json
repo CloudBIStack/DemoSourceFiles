@@ -48,7 +48,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "dataflow8",
+								"referenceName": "dataflow8_copy1",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -70,7 +70,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow8')]"
+				"[concat(variables('factoryId'), '/dataflows/dataflow8_copy1')]"
 			]
 		},
 		{
@@ -599,73 +599,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dataflow8')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "dsemployee",
-								"type": "DatasetReference"
-							},
-							"name": "csv"
-						},
-						{
-							"dataset": {
-								"referenceName": "assql",
-								"type": "DatasetReference"
-							},
-							"name": "sql"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "assql",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						},
-						{
-							"dataset": {
-								"referenceName": "assql",
-								"type": "DatasetReference"
-							},
-							"name": "sink2"
-						}
-					],
-					"transformations": [
-						{
-							"name": "DerivedColumn1"
-						},
-						{
-							"name": "Exists1"
-						},
-						{
-							"name": "DerivedColumn2"
-						},
-						{
-							"name": "DerivedColumn3"
-						},
-						{
-							"name": "DerivedColumn4"
-						},
-						{
-							"name": "AlterRow1"
-						}
-					],
-					"script": "source(output(\n\t\tid as short,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\ncsv derive(inputhash = md5(name,dept)) ~> DerivedColumn1\nDerivedColumn1, DerivedColumn2 exists(inputhash == sqlhash,\n\tnegate:false,\n\tbroadcast: 'auto')~> Exists1\nsql derive(sqlhash = md5(name,dept)) ~> DerivedColumn2\nExists1 derive(isactive = 1,\n\t\tenddate = toDate('9999-12-31')) ~> DerivedColumn3\nExists1 derive(isActive = 0,\n\t\tenddate = toDate(currentUTC())) ~> DerivedColumn4\nDerivedColumn4 alterRow(updateIf(true())) ~> AlterRow1\nDerivedColumn3 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tisactive,\n\t\tstartdate,\n\t\tenddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id','name','dept'],\n\tskipKeyWrites:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tdept,\n\t\tisactive = isActive,\n\t\tenddate,\n\t\tid,\n\t\tname\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink2"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/dsemployee')]",
-				"[concat(variables('factoryId'), '/datasets/assql')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/dataflow8_copy1')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -709,13 +642,16 @@
 							"name": "DerivedColumn1"
 						},
 						{
-							"name": "Exists1"
-						},
-						{
 							"name": "DerivedColumn2"
 						},
 						{
 							"name": "DerivedColumn3"
+						},
+						{
+							"name": "Exists1"
+						},
+						{
+							"name": "Exists2"
 						},
 						{
 							"name": "DerivedColumn4"
@@ -724,7 +660,77 @@
 							"name": "AlterRow1"
 						}
 					],
-					"script": "source(output(\n\t\tid as short,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\ncsv derive(inputhash = md5(name,dept)) ~> DerivedColumn1\nDerivedColumn1, DerivedColumn2 exists(inputhash == sqlhash,\n\tnegate:false,\n\tbroadcast: 'auto')~> Exists1\nsql derive(sqlhash = md5(name,dept)) ~> DerivedColumn2\nExists1 derive(isactive = 1,\n\t\tenddate = toDate('9999-12-31')) ~> DerivedColumn3\nExists1 derive(isActive = 0,\n\t\tenddate = toDate(currentUTC())) ~> DerivedColumn4\nDerivedColumn4 alterRow(updateIf(true())) ~> AlterRow1\nDerivedColumn3 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tisactive,\n\t\tstartdate,\n\t\tenddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tskipKeyWrites:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tdept,\n\t\tisactive = isActive,\n\t\tenddate,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink2"
+					"script": "source(output(\n\t\tid as short,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\ncsv derive(inputhash = md5(name,dept)) ~> DerivedColumn1\nsql derive(sqlhash = md5(name,dept)) ~> DerivedColumn2\nExists1 derive(isactive = 1,\n\t\tenddate = toDate('9999-12-31')) ~> DerivedColumn3\nDerivedColumn1, DerivedColumn2 exists(inputhash == sqlhash,\n\tnegate:true,\n\tbroadcast: 'auto')~> Exists1\nDerivedColumn2, DerivedColumn3 exists(sql@id == csv@id\n\t&& sql@name == csv@name,\n\tnegate:false,\n\tbroadcast: 'auto')~> Exists2\nExists2 derive(enddate = toDate(currentUTC()),\n\t\tisactive = 0) ~> DerivedColumn4\nDerivedColumn4 alterRow(updateIf(true())) ~> AlterRow1\nDerivedColumn3 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tisactive,\n\t\tstartdate,\n\t\tenddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id','name','dept'],\n\tskipKeyWrites:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tisactive,\n\t\tenddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink2"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dsemployee')]",
+				"[concat(variables('factoryId'), '/datasets/assql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow8_copy2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dsemployee",
+								"type": "DatasetReference"
+							},
+							"name": "csv"
+						},
+						{
+							"dataset": {
+								"referenceName": "assql",
+								"type": "DatasetReference"
+							},
+							"name": "sql"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "assql",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "assql",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DerivedColumn1"
+						},
+						{
+							"name": "DerivedColumn2"
+						},
+						{
+							"name": "DerivedColumn3"
+						},
+						{
+							"name": "Exists1"
+						},
+						{
+							"name": "Exists2"
+						},
+						{
+							"name": "DerivedColumn4"
+						},
+						{
+							"name": "AlterRow1"
+						}
+					],
+					"script": "source(output(\n\t\tid as short,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\ncsv derive(inputhash = md5(name,dept)) ~> DerivedColumn1\nsql derive(sqlhash = md5(name,dept)) ~> DerivedColumn2\nExists1 derive(isactive = 1,\n\t\tenddate = toDate('9999-12-31')) ~> DerivedColumn3\nDerivedColumn1, DerivedColumn2 exists(inputhash == sqlhash,\n\tnegate:true,\n\tbroadcast: 'auto')~> Exists1\nDerivedColumn2, DerivedColumn3 exists(sql@id == csv@id\n\t&& sql@name == csv@name,\n\tnegate:false,\n\tbroadcast: 'auto')~> Exists2\nExists2 derive(enddate = toDate(currentUTC()),\n\t\tisactive = 0) ~> DerivedColumn4\nDerivedColumn4 alterRow(updateIf(true())) ~> AlterRow1\nDerivedColumn3 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tisactive,\n\t\tstartdate,\n\t\tenddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id','name','dept'],\n\tskipKeyWrites:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tisactive,\n\t\tenddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink2"
 				}
 			},
 			"dependsOn": [
