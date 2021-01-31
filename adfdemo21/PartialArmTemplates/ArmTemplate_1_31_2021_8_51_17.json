@@ -6,22 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "adfdemo21"
-		},
-		"AzureBlobStorage1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
-		},
-		"lsadl_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'lsadl'"
-		},
-		"lsazsql_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'lsazsql'"
-		},
-		"lsadl_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://saadl.dfs.core.windows.net"
 		}
 	},
 	"variables": {
@@ -49,16 +33,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "dataflow8",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"csv": {},
-									"sql": {},
-									"sink1": {},
-									"sink2": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -72,373 +48,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/dataflow8')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DimEmp')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lsazsql",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "EmpID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "surrogatekey",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Region",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Status",
-						"type": "nvarchar"
-					},
-					{
-						"name": "EmpFunction",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Level",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Role",
-						"type": "nvarchar"
-					},
-					{
-						"name": "StartDate",
-						"type": "date"
-					},
-					{
-						"name": "EndDate",
-						"type": "date"
-					},
-					{
-						"name": "iscurrent",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "processtime",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"tableName": "[[dbo].[DimEmp]"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lsazsql')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/EmployeeFiles')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "mycontainer"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "EmpID",
-						"type": "String"
-					},
-					{
-						"name": "Region",
-						"type": "String"
-					},
-					{
-						"name": "Status",
-						"type": "String"
-					},
-					{
-						"name": "Function",
-						"type": "String"
-					},
-					{
-						"name": "Level",
-						"type": "String"
-					},
-					{
-						"name": "Role",
-						"type": "String"
-					},
-					{
-						"name": "StartDate",
-						"type": "String"
-					},
-					{
-						"name": "EndDate",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/assql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lsazsql",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "name",
-						"type": "varchar"
-					},
-					{
-						"name": "dept",
-						"type": "varchar"
-					},
-					{
-						"name": "isactive",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "startdate",
-						"type": "date"
-					},
-					{
-						"name": "enddate",
-						"type": "date"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "t_dim_employee"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lsazsql')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dsemployee')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lsadl",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileSystem": "democontainer"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lsadl')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dsout')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lsadl",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "scd",
-						"fileSystem": "democontainer"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lsadl')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dsproduct')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lsadl",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "SalesData.csv",
-						"fileSystem": "democontainer"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "Sno",
-						"type": "String"
-					},
-					{
-						"name": "Region",
-						"type": "String"
-					},
-					{
-						"name": "Country",
-						"type": "String"
-					},
-					{
-						"name": "Item Type",
-						"type": "String"
-					},
-					{
-						"name": "Sales Channel",
-						"type": "String"
-					},
-					{
-						"name": "Order Priority",
-						"type": "String"
-					},
-					{
-						"name": "Order Date",
-						"type": "String"
-					},
-					{
-						"name": "Order ID",
-						"type": "String"
-					},
-					{
-						"name": "Ship Date",
-						"type": "String"
-					},
-					{
-						"name": "Units Sold",
-						"type": "String"
-					},
-					{
-						"name": "Unit Price",
-						"type": "String"
-					},
-					{
-						"name": "Unit Cost",
-						"type": "String"
-					},
-					{
-						"name": "Total Revenue",
-						"type": "String"
-					},
-					{
-						"name": "Total Cost",
-						"type": "String"
-					},
-					{
-						"name": "Total Profit",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lsadl')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/lsadl')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('lsadl_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('lsadl_accountKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/lsazsql')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('lsazsql_connectionString')]"
-				}
-			},
-			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dataflow7')]",
@@ -514,10 +123,7 @@
 					"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\nsource(output(\n\t\tid as short,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nFilter1 select(mapColumn(\n\t\tsql_id = id,\n\t\tsql_name = name,\n\t\tsql_dept = dept,\n\t\tsql_isactive = isactive,\n\t\tsql_startdate = startdate,\n\t\tsql_enddate = enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenameCols\nIdentifyUpdates select(mapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropSQLCols\nDropSQLCols derive(isactive = toInteger(1),\n\t\tEndDate = toDate('9999-12-31')) ~> makeitactive\nRenameCols derive(hashref = md5(sql_id,sql_name,sql_dept)) ~> hashsql\ncsv derive(hashinput = md5(id,name,dept)) ~> hashcsv\nhashcsv, hashsql exists(hashinput==hashref,\n\tnegate:true,\n\tbroadcast: 'auto')~> IdentifyUpdates\nhashsql, hashcsv exists(sql_id == id && hashinput!=hashref,\n\tnegate:false,\n\tbroadcast: 'auto')~> IdentifyObsolete\nIdentifyObsolete derive(sql_isactive = 0,\n\t\tsql_enddate = currentDate('MM/dd/YYYY')) ~> makeitinactive\nmakeitinactive alterRow(updateIf(true())) ~> AlterRow1\nsql filter(isactive==1) ~> Filter1\nmakeitactive sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate,\n\t\tenddate = EndDate,\n\t\tisactive\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink3\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid = sql_id,\n\t\tname = sql_name,\n\t\tdept = sql_dept,\n\t\tisactive = sql_isactive,\n\t\tstartdate = sql_startdate,\n\t\tenddate = sql_enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink4"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/assql')]",
-				"[concat(variables('factoryId'), '/datasets/dsemployee')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dataflow7_copy1')]",
@@ -593,10 +199,7 @@
 					"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\nsource(output(\n\t\tid as short,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nFilter1 select(mapColumn(\n\t\tsql_id = id,\n\t\tsql_name = name,\n\t\tsql_dept = dept,\n\t\tsql_isactive = isactive,\n\t\tsql_startdate = startdate,\n\t\tsql_enddate = enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenameCols\nIdentifyUpdates select(mapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropSQLCols\nDropSQLCols derive(isactive = toInteger(1),\n\t\tEndDate = toDate('9999-12-31')) ~> makeitactive\nRenameCols derive(hashref = md5(sql_name,sql_dept)) ~> hashsql\ncsv derive(hashinput = md5(name,dept)) ~> hashcsv\nhashcsv, hashsql exists(hashinput!=hashref,\n\tnegate:true,\n\tbroadcast: 'auto')~> IdentifyUpdates\nhashsql, hashcsv exists(sql_id == id && hashinput!=hashref,\n\tnegate:false,\n\tbroadcast: 'auto')~> IdentifyObsolete\nIdentifyObsolete derive(sql_isactive = 0,\n\t\tsql_enddate = currentDate('MM/dd/YYYY')) ~> makeitinactive\nmakeitinactive alterRow(updateIf(true())) ~> AlterRow1\nsql filter(isactive==1) ~> Filter1\nmakeitactive sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tstartdate,\n\t\tenddate = EndDate,\n\t\tisactive\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink3\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid = sql_id,\n\t\tname = sql_name,\n\t\tdept = sql_dept,\n\t\tisactive = sql_isactive,\n\t\tstartdate = sql_startdate,\n\t\tenddate = sql_enddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink4"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/assql')]",
-				"[concat(variables('factoryId'), '/datasets/dsemployee')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dataflow8')]",
@@ -660,10 +263,7 @@
 					"script": "source(output(\n\t\tid as short,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\ncsv derive(inputhash = md5(name,dept)) ~> DerivedColumn1\nDerivedColumn1, DerivedColumn2 exists(inputhash == sqlhash,\n\tnegate:false,\n\tbroadcast: 'auto')~> Exists1\nsql derive(sqlhash = md5(name,dept)) ~> DerivedColumn2\nExists1 derive(isactive = 1,\n\t\tenddate = toDate('9999-12-31')) ~> DerivedColumn3\nExists1 derive(isActive = 0,\n\t\tenddate = toDate(currentUTC())) ~> DerivedColumn4\nDerivedColumn4 alterRow(updateIf(true())) ~> AlterRow1\nDerivedColumn3 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tisactive,\n\t\tstartdate,\n\t\tenddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tskipKeyWrites:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tdept,\n\t\tisactive = isActive,\n\t\tenddate,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink2"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/dsemployee')]",
-				"[concat(variables('factoryId'), '/datasets/assql')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dataflow8_copy1')]",
@@ -727,10 +327,7 @@
 					"script": "source(output(\n\t\tid as short,\n\t\tname as string,\n\t\tdept as string,\n\t\tstartdate as date 'MM/dd/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['2021/*.csv']) ~> csv\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sql\ncsv derive(inputhash = md5(name,dept)) ~> DerivedColumn1\nDerivedColumn1, DerivedColumn2 exists(inputhash == sqlhash,\n\tnegate:false,\n\tbroadcast: 'auto')~> Exists1\nsql derive(sqlhash = md5(name,dept)) ~> DerivedColumn2\nExists1 derive(isactive = 1,\n\t\tenddate = toDate('9999-12-31')) ~> DerivedColumn3\nExists1 derive(isActive = 0,\n\t\tenddate = toDate(currentUTC())) ~> DerivedColumn4\nDerivedColumn4 alterRow(updateIf(true())) ~> AlterRow1\nDerivedColumn3 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tdept,\n\t\tisactive,\n\t\tstartdate,\n\t\tenddate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nAlterRow1 sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tdept as string,\n\t\tisactive as integer,\n\t\tstartdate as date,\n\t\tenddate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tskipKeyWrites:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tdept,\n\t\tisactive = isActive,\n\t\tenddate,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink2"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/dsemployee')]",
-				"[concat(variables('factoryId'), '/datasets/assql')]"
-			]
+			"dependsOn": []
 		}
 	]
 }
