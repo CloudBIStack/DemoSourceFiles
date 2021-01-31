@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow8",
+						"referenceName": "dataflow8_copy1",
 						"type": "DataFlowReference"
 					},
 					"compute": {
