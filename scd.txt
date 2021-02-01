@@ -1,0 +1,17 @@
+what is scd - slowly changing dimension
+
+Dim table:
+
+fixed attrib
+
+changing attribute
+	to maintain history or not?
+	NO: Overwrite --> SCD Type I or UPSERT
+	YES: Make existing rec inactive or disabled --> SCD Type II
+	
+Input file:
+
+Records
+	Updated --> Make existing rec inactive, insert updated values.
+	New  --> insert 
+	No change --> ignore
