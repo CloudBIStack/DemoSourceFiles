@@ -88,7 +88,7 @@
 					"functionName": "HttpTrigger1 ",
 					"method": "POST",
 					"body": {
-						"value": "@concat('{''name''',':''',join(variables('filenames'), ','),'}')",
+						"value": "@concat('{''name''',':''',join(variables('filenames'), ','),'','}')",
 						"type": "Expression"
 					}
 				},
