@@ -88,7 +88,7 @@
 					"functionName": "HttpTrigger1 ",
 					"method": "POST",
 					"body": {
-						"value": "@concat('{name:',variables('filenames'),'}')",
+						"value": "@concat('name',join(variables('filenames'), ','))",
 						"type": "Expression"
 					}
 				},
@@ -96,34 +96,11 @@
 					"referenceName": "AzFnRecentFile",
 					"type": "LinkedServiceReference"
 				}
-			},
-			{
-				"name": "Set variable1",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "ForEach1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "filenames1",
-					"value": {
-						"value": "@variables('filenames').Value",
-						"type": "Expression"
-					}
-				}
 			}
 		],
 		"variables": {
 			"filenames": {
 				"type": "Array"
-			},
-			"filenames1": {
-				"type": "String"
 			}
 		},
 		"annotations": []
