@@ -1,0 +1,23 @@
+{
+	"name": "dstxtfile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsadl",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "2021/Test",
+				"fileSystem": "democontainer"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
