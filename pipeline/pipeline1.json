@@ -82,7 +82,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"functionName": "HttpTrigger1 ",
-					"method": "GET"
+					"method": "POST",
+					"body": {
+						"value": "@concat('{name:',variables('filenames'),'}')",
+						"type": "Expression"
+					}
 				},
 				"linkedServiceName": {
 					"referenceName": "AzFnRecentFile",
