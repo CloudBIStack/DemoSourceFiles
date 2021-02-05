@@ -56,7 +56,7 @@
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "filenames",
+								"variableName": "filenamesarray",
 								"value": {
 									"value": "@item().name",
 									"type": "Expression"
@@ -97,11 +97,34 @@
 					"referenceName": "AzFnRecentFile",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "filenames",
+					"value": {
+						"value": "join(variables('filenamesarray'), ',')",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
-			"filenames": {
+			"filenamesarray": {
 				"type": "Array"
+			},
+			"filenames": {
+				"type": "String"
 			}
 		},
 		"annotations": []
