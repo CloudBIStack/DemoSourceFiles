@@ -71,7 +71,7 @@
 				"type": "AzureFunctionActivity",
 				"dependsOn": [
 					{
-						"activity": "ForEach1",
+						"activity": "Set variable1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
