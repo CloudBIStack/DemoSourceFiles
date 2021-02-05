@@ -89,7 +89,7 @@
 					"functionName": "HttpTrigger1 ",
 					"method": "POST",
 					"body": {
-						"value": "{ \n\nname: 'file1_20121111.txt,file2.20211121.txt'\n\n}",
+						"value": "{ \n\n\"name\" : \"file1_20121111.txt,file2.20211121.txt\"\n\n}",
 						"type": "Expression"
 					}
 				},
