@@ -24,6 +24,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -88,7 +89,7 @@
 					"functionName": "HttpTrigger1 ",
 					"method": "POST",
 					"body": {
-						"value": "@concat('{''name''',':''',join(variables('filenames'), ','),'''}')",
+						"value": "{'name':'file1_20121111.txt,file2.20211121.txt'}",
 						"type": "Expression"
 					}
 				},
