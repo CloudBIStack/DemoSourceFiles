@@ -145,7 +145,7 @@
 							"recursive": true,
 							"wildcardFolderPath": "2021/Test",
 							"wildcardFileName": {
-								"value": "@activity('Azure Function1').output",
+								"value": "@activity('Azure Function1').output.Output",
 								"type": "Expression"
 							},
 							"enablePartitionDiscovery": false
@@ -154,11 +154,36 @@
 							"type": "DelimitedTextReadSettings"
 						}
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
 						"referenceName": "dsTest",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsout",
 						"type": "DatasetReference"
 					}
 				]
