@@ -113,7 +113,7 @@
 				"typeProperties": {
 					"variableName": "filenames",
 					"value": {
-						"value": "join(variables('filenamesarray'), ',')",
+						"value": "@join(variables('filenamesarray'),',')",
 						"type": "Expression"
 					}
 				}
