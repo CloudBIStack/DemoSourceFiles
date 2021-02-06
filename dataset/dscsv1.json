@@ -1,0 +1,41 @@
+{
+	"name": "dscsv1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsadl",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "emp.csv",
+				"folderPath": "2021",
+				"fileSystem": "democontainer"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "eid",
+				"type": "String"
+			},
+			{
+				"name": "name",
+				"type": "String"
+			},
+			{
+				"name": "salary",
+				"type": "String"
+			},
+			{
+				"name": "age",
+				"type": "String"
+			}
+		]
+	}
+}

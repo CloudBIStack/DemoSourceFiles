@@ -58,7 +58,7 @@
 						}
 					},
 					"dataset": {
-						"referenceName": "dsproduct",
+						"referenceName": "dscsv1",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
@@ -84,7 +84,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@union(activity('Lookup1').output.firstRow,activity('Lookup2').output.firstRow)",
+						"value": "@union(activity('Lookup1').output.value,activity('Lookup2').output.value)",
 						"type": "Expression"
 					},
 					"activities": [
@@ -96,7 +96,7 @@
 							"typeProperties": {
 								"variableName": "var",
 								"value": {
-									"value": "@item().value",
+									"value": "@item().Sno",
 									"type": "Expression"
 								}
 							}
