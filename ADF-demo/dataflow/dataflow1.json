@@ -1,0 +1,90 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Json1",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "flatten1"
+				},
+				{
+					"name": "flatten2"
+				},
+				{
+					"name": "flatten3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Header as (Id as string, DateTime as string),",
+				"          Qualification as (HighestQualification as string, {Year of Passing} as string, Grade as string, University as (Name as string, Location as string, Type as string), TotalYearsofStudy as string),",
+				"          Work as (Industry as string, JobType as string, ExperienceYears as string, PersonalMailID as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> source1",
+				"source1 aggregate(Header = collect(@(HeaderArray=Header)),",
+				"          Qualification = collect(@(QualificationArray=Qualification)),",
+				"          Work = collect(@(workarray=Work))) ~> aggregate1",
+				"aggregate1 foldDown(unroll(Header, Header),",
+				"     mapColumn(",
+				"          id = Header.HeaderArray.Id,",
+				"          datetime = Header.HeaderArray.DateTime,",
+				"          Qualification = Qualification,",
+				"          Work = Work",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"flatten1 foldDown(unroll(Qualification, Qualification),",
+				"     mapColumn(",
+				"          HighestQualification = Qualification.QualificationArray.HighestQualification,",
+				"          {Year of Passing} = Qualification.QualificationArray.{Year of Passing},",
+				"          Grade = Qualification.QualificationArray.Grade,",
+				"          Name = Qualification.QualificationArray.University.Name,",
+				"          Location = Qualification.QualificationArray.University.Location,",
+				"          Type = Qualification.QualificationArray.University.Type,",
+				"          TotalYearsofStudy = Qualification.QualificationArray.TotalYearsofStudy,",
+				"          Work = Work",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten2",
+				"flatten2 foldDown(unroll(),",
+				"     mapColumn(",
+				"          Industry = Work.workarray.Industry,",
+				"          JobType = Work.workarray.JobType",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten3",
+				"flatten3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
