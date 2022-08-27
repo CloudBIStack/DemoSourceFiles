@@ -246,6 +246,53 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -465,6 +512,93 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Json1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_Sales",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "testJson.json",
+						"fileSystem": "demo"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"Header": {
+							"type": "object",
+							"properties": {
+								"Id": {
+									"type": "string"
+								},
+								"DateTime": {
+									"type": "string"
+								}
+							}
+						},
+						"Qualification": {
+							"type": "object",
+							"properties": {
+								"HighestQualification": {
+									"type": "string"
+								},
+								"Year of Passing": {
+									"type": "string"
+								},
+								"Grade": {
+									"type": "string"
+								},
+								"University": {
+									"type": "object",
+									"properties": {
+										"Name": {
+											"type": "string"
+										},
+										"Location": {
+											"type": "string"
+										},
+										"Type": {
+											"type": "string"
+										}
+									}
+								},
+								"TotalYearsofStudy": {
+									"type": "string"
+								}
+							}
+						},
+						"Work": {
+							"type": "object",
+							"properties": {
+								"Industry": {
+									"type": "string"
+								},
+								"JobType": {
+									"type": "string"
+								},
+								"ExperienceYears": {
+									"type": "string"
+								},
+								"PersonalMailID": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_Sales')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/src_dl')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -539,6 +673,102 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Json1",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DelimitedText2",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "flatten1"
+						},
+						{
+							"name": "flatten2"
+						},
+						{
+							"name": "flatten3"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Header as (Id as string, DateTime as string),",
+						"          Qualification as (HighestQualification as string, {Year of Passing} as string, Grade as string, University as (Name as string, Location as string, Type as string), TotalYearsofStudy as string),",
+						"          Work as (Industry as string, JobType as string, ExperienceYears as string, PersonalMailID as string)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'arrayOfDocuments') ~> source1",
+						"source1 aggregate(Header = collect(@(HeaderArray=Header)),",
+						"          Qualification = collect(@(QualificationArray=Qualification)),",
+						"          Work = collect(@(workarray=Work))) ~> aggregate1",
+						"aggregate1 foldDown(unroll(Header, Header),",
+						"     mapColumn(",
+						"          id = Header.HeaderArray.Id,",
+						"          datetime = Header.HeaderArray.DateTime,",
+						"          Qualification,",
+						"          Work",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten1",
+						"flatten1 foldDown(unroll(Qualification, Qualification),",
+						"     mapColumn(",
+						"          HighestQualification = Qualification.QualificationArray.HighestQualification,",
+						"          {Year of Passing} = Qualification.QualificationArray.{Year of Passing},",
+						"          Grade = Qualification.QualificationArray.Grade,",
+						"          Name = Qualification.QualificationArray.University.Name,",
+						"          Location = Qualification.QualificationArray.University.Location,",
+						"          Type = Qualification.QualificationArray.University.Type,",
+						"          TotalYearsofStudy = Qualification.QualificationArray.TotalYearsofStudy,",
+						"          Work",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten2",
+						"flatten2 foldDown(unroll(),",
+						"     mapColumn(",
+						"          Industry = Work.workarray.Industry,",
+						"          JobType = Work.workarray.JobType",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten3",
+						"flatten3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Json1')]",
+				"[concat(variables('factoryId'), '/datasets/DelimitedText2')]"
+			]
 		}
 	]
 }
