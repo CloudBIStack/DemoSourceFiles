@@ -280,7 +280,8 @@
 									"source2": {},
 									"source3": {},
 									"sink1": {},
-									"sink2": {}
+									"sink2": {},
+									"sink3": {}
 								}
 							},
 							"staging": {},
@@ -1035,6 +1036,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "sink2"
+						},
+						{
+							"dataset": {
+								"referenceName": "DelimitedText5",
+								"type": "DatasetReference"
+							},
+							"name": "sink3"
 						}
 					],
 					"transformations": [
@@ -1104,13 +1112,11 @@
 						"     skipDuplicateMapOutputs: false) ~> flatten1",
 						"source1 aggregate(header = collect(@(Header=Header,Qualification=Qualification,Work=Work))) ~> aggregate1",
 						"source3 aggregate(array = collect(@(Header=Header,Qualification=Qualification,Work=Work))) ~> aggregate2",
-						"aggregate2 foldDown(unroll(array.Qualification.University),",
+						"aggregate2 foldDown(unroll(array),",
 						"     mapColumn(",
 						"          Id = array.Header.Id,",
+						"          University = array.Qualification.University,",
 						"          TotalYearsofStudy = array.Qualification.TotalYearsofStudy,",
-						"          NameofUniv = array.Qualification.University.NameofUniv,",
-						"          Location = array.Qualification.University.Location,",
-						"          UGorPG = array.Qualification.University.UGorPG,",
 						"          Industry = array.Work.Industry,",
 						"          DateTime = array.Header.DateTime,",
 						"          HighestQualification = array.Qualification.HighestQualification,",
@@ -1119,9 +1125,18 @@
 						"     ),",
 						"     skipDuplicateMapInputs: false,",
 						"     skipDuplicateMapOutputs: false) ~> flatten2",
-						"flatten2 foldDown(unroll(),",
+						"flatten2 foldDown(unroll(University),",
 						"     mapColumn(",
-						"          Industry",
+						"          Id,",
+						"          DateTime,",
+						"          HighestQualification,",
+						"          {Year of Passing},",
+						"          Grade,",
+						"          TotalYearsofStudy,",
+						"          Industry,",
+						"          NameOfUniv = University.NameofUniv,",
+						"          LocationofUniv = University.Location,",
+						"          UGorPG = University.UGorPG",
 						"     ),",
 						"     skipDuplicateMapInputs: false,",
 						"     skipDuplicateMapOutputs: false) ~> flatten3",
@@ -1138,7 +1153,14 @@
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink2"
+						"     skipDuplicateMapOutputs: true) ~> sink2",
+						"source2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink3"
 					]
 				}
 			},
@@ -1147,7 +1169,64 @@
 				"[concat(variables('factoryId'), '/datasets/Json2')]",
 				"[concat(variables('factoryId'), '/datasets/Json3')]",
 				"[concat(variables('factoryId'), '/datasets/DelimitedText3')]",
-				"[concat(variables('factoryId'), '/datasets/DelimitedText2')]"
+				"[concat(variables('factoryId'), '/datasets/DelimitedText2')]",
+				"[concat(variables('factoryId'), '/datasets/DelimitedText5')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText4')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_Sales",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "copyactivityjsonarrays.csv",
+						"fileSystem": "demo"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_Sales')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText5')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_Sales",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "simplejson.csv",
+						"folderPath": "Output",
+						"fileSystem": "demo"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_Sales')]"
 			]
 		}
 	]
