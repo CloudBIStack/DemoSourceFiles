@@ -17,6 +17,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "source2"
+				},
+				{
+					"dataset": {
+						"referenceName": "Json3",
+						"type": "DatasetReference"
+					},
+					"name": "source3"
 				}
 			],
 			"sinks": [
@@ -34,6 +41,12 @@
 				},
 				{
 					"name": "aggregate1"
+				},
+				{
+					"name": "aggregate2"
+				},
+				{
+					"name": "flatten2"
 				}
 			],
 			"scriptLines": [
@@ -58,6 +71,15 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     documentForm: 'arrayOfDocuments') ~> source2",
+				"source(output(",
+				"          Header as (Id as string, DateTime as string),",
+				"          Qualification as (HighestQualification as string, {Year of Passing} as string, Grade as string, TotalYearsofStudy as string, University as (NameofUniv as string, Location as string, UGorPG as string)[]),",
+				"          Work as (Industry as string, JobType as string, ExperienceYears as string, PersonalMailID as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> source3",
 				"aggregate1 foldDown(unroll(header),",
 				"     mapColumn(",
 				"          Id = header.Header.Id,",
@@ -76,6 +98,22 @@
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> flatten1",
 				"source1 aggregate(header = collect(@(Header=Header,Qualification=Qualification,Work=Work))) ~> aggregate1",
+				"source3 aggregate(array = collect(@(Header=Header,Qualification=Qualification,Work=Work))) ~> aggregate2",
+				"aggregate2 foldDown(unroll(array),",
+				"     mapColumn(",
+				"          Id = array.Header.Id,",
+				"          TotalYearsofStudy = array.Qualification.TotalYearsofStudy,",
+				"          NameofUniv = array.Qualification.University.NameofUniv,",
+				"          Location = array.Qualification.University.Location,",
+				"          UGorPG = array.Qualification.University.UGorPG,",
+				"          Industry = array.Work.Industry,",
+				"          DateTime = array.Header.DateTime,",
+				"          HighestQualification = array.Qualification.HighestQualification,",
+				"          {Year of Passing} = array.Qualification.{Year of Passing},",
+				"          Grade = array.Qualification.Grade",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten2",
 				"flatten1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     umask: 0022,",

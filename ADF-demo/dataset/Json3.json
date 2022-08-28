@@ -1,0 +1,85 @@
+{
+	"name": "Json3",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADLS_Sales",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "arrayandobject.json",
+				"fileSystem": "demo"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"Header": {
+					"type": "object",
+					"properties": {
+						"Id": {
+							"type": "string"
+						},
+						"DateTime": {
+							"type": "string"
+						}
+					}
+				},
+				"Qualification": {
+					"type": "object",
+					"properties": {
+						"HighestQualification": {
+							"type": "string"
+						},
+						"Year of Passing": {
+							"type": "string"
+						},
+						"Grade": {
+							"type": "string"
+						},
+						"TotalYearsofStudy": {
+							"type": "string"
+						},
+						"University": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"NameofUniv": {
+										"type": "string"
+									},
+									"Location": {
+										"type": "string"
+									},
+									"UGorPG": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"Work": {
+					"type": "object",
+					"properties": {
+						"Industry": {
+							"type": "string"
+						},
+						"JobType": {
+							"type": "string"
+						},
+						"ExperienceYears": {
+							"type": "string"
+						},
+						"PersonalMailID": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		}
+	}
+}
