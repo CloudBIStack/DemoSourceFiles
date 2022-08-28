@@ -10,6 +10,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "Json1",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
 				}
 			],
 			"sinks": [
@@ -39,6 +46,15 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     documentForm: 'arrayOfDocuments') ~> source1",
+				"source(output(",
+				"          Header as (Id as string, DateTime as string),",
+				"          Qualification as (HighestQualification as string, {Year of Passing} as string, Grade as string, TotalYearsofStudy as string),",
+				"          Work as (Industry as string, JobType as string, ExperienceYears as string, PersonalMailID as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'singleDocument') ~> source2",
 				"aggregate1 foldDown(unroll(header),",
 				"     mapColumn(",
 				"          Id = header.Header.Id,",

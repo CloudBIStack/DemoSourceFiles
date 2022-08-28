@@ -5,7 +5,14 @@
 			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -25,6 +32,159 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['Header']['Id']"
+								},
+								"sink": {
+									"name": "Id"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Header']['DateTime']"
+								},
+								"sink": {
+									"name": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Qualification']['HighestQualification']"
+								},
+								"sink": {
+									"name": "HighestQualification"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Qualification']['Year of Passing']"
+								},
+								"sink": {
+									"name": "Year of Passing"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Qualification']['Grade']"
+								},
+								"sink": {
+									"name": "Grade"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Qualification']['TotalYearsofStudy']"
+								},
+								"sink": {
+									"name": "TotalYearsofStudy"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Qualification']['University']['NameofUniv']"
+								},
+								"sink": {
+									"name": "NameofUniv"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Qualification']['University']['Location']"
+								},
+								"sink": {
+									"name": "Location"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Work']['Industry']"
+								},
+								"sink": {
+									"name": "Industry"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Work']['JobType']"
+								},
+								"sink": {
+									"name": "JobType"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Work']['ExperienceYears']"
+								},
+								"sink": {
+									"name": "ExperienceYears"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Work']['PersonalMailID']"
+								},
+								"sink": {
+									"name": "PersonalMailID"
+								}
+							}
+						],
+						"collectionReference": "",
+						"mapComplexValuesToString": false
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Json1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
