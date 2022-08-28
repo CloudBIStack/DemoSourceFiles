@@ -40,20 +40,6 @@
 						"Grade": {
 							"type": "string"
 						},
-						"University": {
-							"type": "object",
-							"properties": {
-								"Name": {
-									"type": "string"
-								},
-								"Location": {
-									"type": "string"
-								},
-								"Type": {
-									"type": "string"
-								}
-							}
-						},
 						"TotalYearsofStudy": {
 							"type": "string"
 						}
