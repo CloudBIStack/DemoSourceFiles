@@ -29,10 +29,17 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "DelimitedText2",
+						"referenceName": "DelimitedText3",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DelimitedText2",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
 				}
 			],
 			"transformations": [
@@ -47,6 +54,9 @@
 				},
 				{
 					"name": "flatten2"
+				},
+				{
+					"name": "flatten3"
 				}
 			],
 			"scriptLines": [
@@ -99,7 +109,7 @@
 				"     skipDuplicateMapOutputs: false) ~> flatten1",
 				"source1 aggregate(header = collect(@(Header=Header,Qualification=Qualification,Work=Work))) ~> aggregate1",
 				"source3 aggregate(array = collect(@(Header=Header,Qualification=Qualification,Work=Work))) ~> aggregate2",
-				"aggregate2 foldDown(unroll(array),",
+				"aggregate2 foldDown(unroll(array.Qualification.University),",
 				"     mapColumn(",
 				"          Id = array.Header.Id,",
 				"          TotalYearsofStudy = array.Qualification.TotalYearsofStudy,",
@@ -114,13 +124,26 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> flatten2",
+				"flatten2 foldDown(unroll(),",
+				"     mapColumn(",
+				"          Industry",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten3",
 				"flatten1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"flatten3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
 			]
 		}
 	}

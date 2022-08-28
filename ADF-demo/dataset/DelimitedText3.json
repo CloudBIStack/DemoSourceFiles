@@ -1,5 +1,5 @@
 {
-	"name": "DelimitedText2",
+	"name": "DelimitedText3",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ADLS_Sales",
@@ -10,16 +10,13 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "arrayandobj.csv",
+				"fileName": "arrayofjson.csv",
 				"fileSystem": "demo"
 			},
 			"columnDelimiter": ",",
-			"rowDelimiter": "\n",
-			"escapeChar": "\"",
-			"firstRowAsHeader": true,
+			"escapeChar": "\\",
 			"quoteChar": "\""
 		},
 		"schema": []
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+	}
 }
