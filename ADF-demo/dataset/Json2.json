@@ -1,0 +1,41 @@
+{
+	"name": "Json2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADLS_Sales",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "singlejson.json",
+				"fileSystem": "demo"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"time": {
+					"type": "string"
+				},
+				"callingimsi": {
+					"type": "string"
+				},
+				"callingnum1": {
+					"type": "string"
+				},
+				"callingnum2": {
+					"type": "string"
+				},
+				"switch1": {
+					"type": "string"
+				},
+				"switch2": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}
