@@ -1,6 +1,12 @@
 {
 	"name": "AzureKeyVault1",
 	"properties": {
+		"parameters": {
+			"test": {
+				"type": "string",
+				"defaultValue": "test"
+			}
+		},
 		"annotations": [],
 		"type": "AzureKeyVault",
 		"typeProperties": {
