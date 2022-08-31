@@ -182,7 +182,10 @@
 				"outputs": [
 					{
 						"referenceName": "DelimitedText1",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "1.txt"
+						}
 					}
 				]
 			}
