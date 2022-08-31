@@ -22,6 +22,14 @@
 		"ADLS_Sales_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://saadldemo.dfs.core.windows.net/"
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://kvdemo21.vault.azure.net/"
+		},
+		"AzureKeyVault2_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://kvdemo21.vault.azure.net/"
 		}
 	},
 	"variables": {
@@ -46,6 +54,32 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault2_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalytics1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -63,6 +97,12 @@
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"parameters": {
+					"dbname": {
+						"type": "String",
+						"defaultValue": "azsqldb"
+					}
+				},
 				"annotations": [],
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
@@ -78,7 +118,10 @@
 			"properties": {
 				"linkedServiceName": {
 					"referenceName": "azSqlDB_Adventure",
-					"type": "LinkedServiceReference"
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"dbname": "azsqldb"
+					}
 				},
 				"parameters": {
 					"tablename": {
@@ -175,10 +218,8 @@
 					}
 				],
 				"typeProperties": {
-					"table": {
-						"value": "@replace(dataset().tablename,'.csv','')",
-						"type": "Expression"
-					}
+					"schema": "SalesLT",
+					"table": "Address"
 				}
 			},
 			"dependsOn": [
@@ -243,12 +284,20 @@
 					"referenceName": "ADLS_Sales",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"filename": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "json2csv.csv",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
 						"fileSystem": "demo"
 					},
 					"columnDelimiter": ",",
@@ -276,7 +325,8 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "arrayandobj.csv",
+						"fileName": "part1.txt",
+						"folderPath": "out",
 						"fileSystem": "demo"
 					},
 					"columnDelimiter": ",",
@@ -285,7 +335,12 @@
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": []
+				"schema": [
+					{
+						"name": "c1",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ADLS_Sales')]"
@@ -623,11 +678,28 @@
 			"properties": {
 				"activities": [
 					{
+						"name": "Fail1",
+						"type": "Fail",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"message": "Forced Failure",
+							"errorCode": "101"
+						}
+					},
+					{
 						"name": "Copy data1",
 						"type": "Copy",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Fail1",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.12:00:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -636,12 +708,23 @@
 						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "AzureSqlSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "DynamicRange",
-								"partitionSettings": {
-									"partitionUpperBound": "",
-									"partitionLowerBound": ""
+								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "Error",
+										"value": {
+											"value": "@activity('Fail1').Error.Message",
+											"type": "Expression"
+										}
+									}
+								],
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
 								}
 							},
 							"sink": {
@@ -656,9 +739,33 @@
 								}
 							},
 							"enableStaging": false,
-							"parallelCopies": 5,
 							"translator": {
 								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "c1",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "c1",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Error",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Error",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
 								"typeConversion": true,
 								"typeConversionSettings": {
 									"allowDataTruncation": true,
@@ -668,18 +775,18 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "AzureSqlTable1",
+								"referenceName": "DelimitedText2",
 								"type": "DatasetReference",
-								"parameters": {
-									"tablename": "''"
-								}
+								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "DelimitedText1",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"filename": "test.txt"
+								}
 							}
 						]
 					}
@@ -692,7 +799,7 @@
 				"lastPublishTime": "2022-08-09T14:07:09Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]",
+				"[concat(variables('factoryId'), '/datasets/DelimitedText2')]",
 				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]"
 			]
 		},
@@ -834,202 +941,19 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "Json1",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						},
-						{
-							"dataset": {
-								"referenceName": "Json2",
-								"type": "DatasetReference"
-							},
-							"name": "source2"
-						},
-						{
-							"dataset": {
-								"referenceName": "Json3",
-								"type": "DatasetReference"
-							},
-							"name": "source3"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DelimitedText3",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						},
-						{
-							"dataset": {
-								"referenceName": "DelimitedText2",
-								"type": "DatasetReference"
-							},
-							"name": "sink2"
-						},
-						{
-							"dataset": {
-								"referenceName": "DelimitedText5",
-								"type": "DatasetReference"
-							},
-							"name": "sink3"
-						}
-					],
-					"transformations": [
-						{
-							"name": "flatten1"
-						},
-						{
-							"name": "aggregate1"
-						},
-						{
-							"name": "aggregate2"
-						},
-						{
-							"name": "flatten2"
-						},
-						{
-							"name": "flatten3"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Header as (DateTime as timestamp, Id as string),",
-						"          Qualification as (Grade as string, HighestQualification as string, TotalYearsofStudy as short, University as (Location as string, NameofUniv as string), {Year of Passing} as short),",
-						"          Work as (ExperienceYears as short, Industry as string, JobType as string, PersonalMailID as string)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     documentForm: 'arrayOfDocuments') ~> source1",
-						"source(output(",
-						"          callingimsi as long,",
-						"          callingnum1 as integer,",
-						"          callingnum2 as integer,",
-						"          switch1 as string,",
-						"          switch2 as string,",
-						"          time as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     documentForm: 'arrayOfDocuments') ~> source2",
-						"source(output(",
-						"          Header as (Id as string, DateTime as string),",
-						"          Qualification as (HighestQualification as string, {Year of Passing} as string, Grade as string, TotalYearsofStudy as string, University as (NameofUniv as string, Location as string, UGorPG as string)[]),",
-						"          Work as (Industry as string, JobType as string, ExperienceYears as string, PersonalMailID as string)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     documentForm: 'arrayOfDocuments') ~> source3",
-						"aggregate1 foldDown(unroll(header),",
-						"     mapColumn(",
-						"          Id = header.Header.Id,",
-						"          DateTime = header.Header.DateTime,",
-						"          Grade = header.Qualification.Grade,",
-						"          HighestQualification = header.Qualification.HighestQualification,",
-						"          TotalYearsofStudy = header.Qualification.TotalYearsofStudy,",
-						"          NameofUniv = header.Qualification.University.NameofUniv,",
-						"          Location = header.Qualification.University.Location,",
-						"          Header = header.Qualification.{Year of Passing},",
-						"          ExperienceYears = header.Work.ExperienceYears,",
-						"          Industry = header.Work.Industry,",
-						"          JobType = header.Work.JobType,",
-						"          PersonalMailID = header.Work.PersonalMailID",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> flatten1",
-						"source1 aggregate(header = collect(@(Header=Header,Qualification=Qualification,Work=Work))) ~> aggregate1",
-						"source3 aggregate(array = collect(@(Header=Header,Qualification=Qualification,Work=Work))) ~> aggregate2",
-						"aggregate2 foldDown(unroll(array),",
-						"     mapColumn(",
-						"          Id = array.Header.Id,",
-						"          University = array.Qualification.University,",
-						"          TotalYearsofStudy = array.Qualification.TotalYearsofStudy,",
-						"          Industry = array.Work.Industry,",
-						"          DateTime = array.Header.DateTime,",
-						"          HighestQualification = array.Qualification.HighestQualification,",
-						"          {Year of Passing} = array.Qualification.{Year of Passing},",
-						"          Grade = array.Qualification.Grade",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> flatten2",
-						"flatten2 foldDown(unroll(University),",
-						"     mapColumn(",
-						"          Id,",
-						"          DateTime,",
-						"          HighestQualification,",
-						"          {Year of Passing},",
-						"          Grade,",
-						"          TotalYearsofStudy,",
-						"          Industry,",
-						"          NameOfUniv = University.NameofUniv,",
-						"          LocationofUniv = University.Location,",
-						"          UGorPG = University.UGorPG",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> flatten3",
-						"flatten1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['arrayandobj.csv'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1",
-						"flatten3 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['multipleflatten.csv'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink2",
-						"source2 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink3"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Json1')]",
-				"[concat(variables('factoryId'), '/datasets/Json2')]",
-				"[concat(variables('factoryId'), '/datasets/Json3')]",
-				"[concat(variables('factoryId'), '/datasets/DelimitedText3')]",
-				"[concat(variables('factoryId'), '/datasets/DelimitedText2')]",
-				"[concat(variables('factoryId'), '/datasets/DelimitedText5')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"name": "[concat(parameters('factoryName'), '/pipeline4')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
+						"name": "Copy data1",
+						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "Copy data1",
+								"activity": "Fail1",
 								"dependencyConditions": [
-									"Succeeded"
+									"Failed"
 								]
 							}
 						],
@@ -1042,49 +966,24 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"dataflow": {
-								"referenceName": "dataflow1",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"source2": {},
-									"source3": {},
-									"sink1": {},
-									"sink2": {},
-									"sink3": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
 							"source": {
-								"type": "JsonSource",
+								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "error",
+										"value": {
+											"value": "@activity('Fail1').error.message",
+											"type": "Expression"
+										}
+									}
+								],
 								"storeSettings": {
 									"type": "AzureBlobFSReadSettings",
 									"recursive": true,
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
-									"type": "JsonReadSettings"
+									"type": "DelimitedTextReadSettings"
 								}
 							},
 							"sink": {
@@ -1101,111 +1000,16 @@
 							"enableStaging": false,
 							"translator": {
 								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"path": "$['Header']['Id']"
-										},
-										"sink": {
-											"name": "Id"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Header']['DateTime']"
-										},
-										"sink": {
-											"name": "DateTime"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Qualification']['HighestQualification']"
-										},
-										"sink": {
-											"name": "HighestQualification"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Qualification']['Year of Passing']"
-										},
-										"sink": {
-											"name": "Year of Passing"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Qualification']['Grade']"
-										},
-										"sink": {
-											"name": "Grade"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Qualification']['TotalYearsofStudy']"
-										},
-										"sink": {
-											"name": "TotalYearsofStudy"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Qualification']['University']['NameofUniv']"
-										},
-										"sink": {
-											"name": "NameofUniv"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Qualification']['University']['Location']"
-										},
-										"sink": {
-											"name": "Location"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Work']['Industry']"
-										},
-										"sink": {
-											"name": "Industry"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Work']['JobType']"
-										},
-										"sink": {
-											"name": "JobType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Work']['ExperienceYears']"
-										},
-										"sink": {
-											"name": "ExperienceYears"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Work']['PersonalMailID']"
-										},
-										"sink": {
-											"name": "PersonalMailID"
-										}
-									}
-								],
-								"collectionReference": "",
-								"mapComplexValuesToString": false
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
 							}
 						},
 						"inputs": [
 							{
-								"referenceName": "Json1",
+								"referenceName": "DelimitedText2",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -1214,9 +1018,24 @@
 							{
 								"referenceName": "DelimitedText1",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"filename": {
+										"value": "@concat('Testfilename_',formatDateTime(utcNow(),'MMddyyyyhhmmss'),'.csv')",
+										"type": "Expression"
+									}
+								}
 							}
 						]
+					},
+					{
+						"name": "Fail1",
+						"type": "Fail",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"message": "Forced Failure",
+							"errorCode": "101"
+						}
 					}
 				],
 				"policy": {
@@ -1226,8 +1045,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow1')]",
-				"[concat(variables('factoryId'), '/datasets/Json1')]",
+				"[concat(variables('factoryId'), '/datasets/DelimitedText2')]",
 				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]"
 			]
 		}

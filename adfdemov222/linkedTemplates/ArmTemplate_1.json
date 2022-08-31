@@ -1,0 +1,414 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adfdemov222"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Json1",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "Json2",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						},
+						{
+							"dataset": {
+								"referenceName": "Json3",
+								"type": "DatasetReference"
+							},
+							"name": "source3"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DelimitedText3",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "DelimitedText2",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						},
+						{
+							"dataset": {
+								"referenceName": "DelimitedText5",
+								"type": "DatasetReference"
+							},
+							"name": "sink3"
+						}
+					],
+					"transformations": [
+						{
+							"name": "flatten1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "flatten2"
+						},
+						{
+							"name": "flatten3"
+						},
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Header as (DateTime as timestamp, Id as string),",
+						"          Qualification as (Grade as string, HighestQualification as string, TotalYearsofStudy as short, University as (Location as string, NameofUniv as string), {Year of Passing} as short),",
+						"          Work as (ExperienceYears as short, Industry as string, JobType as string, PersonalMailID as string)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'arrayOfDocuments') ~> source1",
+						"source(output(",
+						"          callingimsi as long,",
+						"          callingnum1 as integer,",
+						"          callingnum2 as integer,",
+						"          switch1 as string,",
+						"          switch2 as string,",
+						"          time as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'arrayOfDocuments') ~> source2",
+						"source(output(",
+						"          Header as (Id as string, DateTime as string),",
+						"          Qualification as (HighestQualification as string, {Year of Passing} as string, Grade as string, TotalYearsofStudy as string, University as (NameofUniv as string, Location as string, UGorPG as string)[]),",
+						"          Work as (Industry as string, JobType as string, ExperienceYears as string, PersonalMailID as string)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'arrayOfDocuments') ~> source3",
+						"aggregate1 foldDown(unroll(header),",
+						"     mapColumn(",
+						"          Id = header.Header.Id,",
+						"          DateTime = header.Header.DateTime,",
+						"          Grade = header.Qualification.Grade,",
+						"          HighestQualification = header.Qualification.HighestQualification,",
+						"          TotalYearsofStudy = header.Qualification.TotalYearsofStudy,",
+						"          NameofUniv = header.Qualification.University.NameofUniv,",
+						"          Location = header.Qualification.University.Location,",
+						"          Header = header.Qualification.{Year of Passing},",
+						"          ExperienceYears = header.Work.ExperienceYears,",
+						"          Industry = header.Work.Industry,",
+						"          JobType = header.Work.JobType,",
+						"          PersonalMailID = header.Work.PersonalMailID",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten1",
+						"source1 aggregate(header = collect(@(Header=Header,Qualification=Qualification,Work=Work))) ~> aggregate1",
+						"source3 aggregate(array = collect(@(Header=Header,Qualification=Qualification,Work=Work))) ~> aggregate2",
+						"aggregate2 foldDown(unroll(array),",
+						"     mapColumn(",
+						"          Id = array.Header.Id,",
+						"          University = array.Qualification.University,",
+						"          TotalYearsofStudy = array.Qualification.TotalYearsofStudy,",
+						"          Industry = array.Work.Industry,",
+						"          DateTime = array.Header.DateTime,",
+						"          HighestQualification = array.Qualification.HighestQualification,",
+						"          {Year of Passing} = array.Qualification.{Year of Passing},",
+						"          Grade = array.Qualification.Grade",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten2",
+						"flatten2 foldDown(unroll(University),",
+						"     mapColumn(",
+						"          Id,",
+						"          DateTime,",
+						"          HighestQualification,",
+						"          {Year of Passing},",
+						"          Grade,",
+						"          TotalYearsofStudy,",
+						"          Industry,",
+						"          NameOfUniv = University.NameofUniv,",
+						"          LocationofUniv = University.Location,",
+						"          UGorPG = University.UGorPG",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten3",
+						"source2 derive(column1 = toString(addDays(currentDate('UTC'),-1),'dd')) ~> derivedColumn1",
+						"flatten1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['arrayandobj.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1",
+						"flatten3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          c1 as string",
+						"     ),",
+						"     partitionFileNames:['multipleflatten.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink2",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink3"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Copy data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"source2": {},
+									"source3": {},
+									"sink1": {},
+									"sink2": {},
+									"sink3": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['Header']['Id']"
+										},
+										"sink": {
+											"name": "Id"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Header']['DateTime']"
+										},
+										"sink": {
+											"name": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Qualification']['HighestQualification']"
+										},
+										"sink": {
+											"name": "HighestQualification"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Qualification']['Year of Passing']"
+										},
+										"sink": {
+											"name": "Year of Passing"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Qualification']['Grade']"
+										},
+										"sink": {
+											"name": "Grade"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Qualification']['TotalYearsofStudy']"
+										},
+										"sink": {
+											"name": "TotalYearsofStudy"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Qualification']['University']['NameofUniv']"
+										},
+										"sink": {
+											"name": "NameofUniv"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Qualification']['University']['Location']"
+										},
+										"sink": {
+											"name": "Location"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Work']['Industry']"
+										},
+										"sink": {
+											"name": "Industry"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Work']['JobType']"
+										},
+										"sink": {
+											"name": "JobType"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Work']['ExperienceYears']"
+										},
+										"sink": {
+											"name": "ExperienceYears"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Work']['PersonalMailID']"
+										},
+										"sink": {
+											"name": "PersonalMailID"
+										}
+									}
+								],
+								"collectionReference": "",
+								"mapComplexValuesToString": false
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Json1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DelimitedText1",
+								"type": "DatasetReference",
+								"parameters": {
+									"filename": "1.txt"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+			]
+		}
+	]
+}

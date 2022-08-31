@@ -17,6 +17,12 @@
 		"ADLS_Sales_properties_typeProperties_url": {
 			"value": "https://saadldemo.dfs.core.windows.net/"
 		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://kvdemo21.vault.azure.net/"
+		},
+		"AzureKeyVault2_properties_typeProperties_baseUrl": {
+			"value": "https://kvdemo21.vault.azure.net/"
+		},
 		"containerUri": {
 			"value": ""
 		},
