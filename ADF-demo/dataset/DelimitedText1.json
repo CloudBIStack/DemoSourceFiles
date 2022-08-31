@@ -5,12 +5,20 @@
 			"referenceName": "ADLS_Sales",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "json2csv.csv",
+				"fileName": {
+					"value": "@dataset().filename",
+					"type": "Expression"
+				},
 				"fileSystem": "demo"
 			},
 			"columnDelimiter": ",",

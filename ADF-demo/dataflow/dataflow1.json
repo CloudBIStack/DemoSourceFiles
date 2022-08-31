@@ -64,6 +64,9 @@
 				},
 				{
 					"name": "flatten3"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -144,6 +147,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> flatten3",
+				"source2 derive(column1 = toString(addDays(currentDate('UTC'),-1),'dd')) ~> derivedColumn1",
 				"flatten1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['arrayandobj.csv'],",
@@ -154,13 +158,16 @@
 				"     skipDuplicateMapOutputs: true) ~> sink1",
 				"flatten3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          c1 as string",
+				"     ),",
 				"     partitionFileNames:['multipleflatten.csv'],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink2",
-				"source2 sink(allowSchemaDrift: true,",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     umask: 0022,",
 				"     preCommands: [],",

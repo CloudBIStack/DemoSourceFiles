@@ -3,7 +3,10 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "azSqlDB_Adventure",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"dbname": "azsqldb"
+			}
 		},
 		"parameters": {
 			"tablename": {
@@ -100,10 +103,8 @@
 			}
 		],
 		"typeProperties": {
-			"table": {
-				"value": "@replace(dataset().tablename,'.csv','')",
-				"type": "Expression"
-			}
+			"schema": "SalesLT",
+			"table": "Address"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"

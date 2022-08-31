@@ -10,7 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "arrayandobj.csv",
+				"fileName": "part1.txt",
+				"folderPath": "out",
 				"fileSystem": "demo"
 			},
 			"columnDelimiter": ",",
@@ -19,7 +20,12 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "c1",
+				"type": "String"
+			}
+		]
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
 }
