@@ -3,11 +3,28 @@
 	"properties": {
 		"activities": [
 			{
+				"name": "Fail1",
+				"type": "Fail",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Forced Failure",
+					"errorCode": "101"
+				}
+			},
+			{
 				"name": "Copy data1",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Fail1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "0.12:00:00",
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
@@ -16,24 +33,29 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
+						"type": "DelimitedTextSource",
 						"additionalColumns": [
 							{
-								"name": "test",
+								"name": "Error",
 								"value": {
-									"value": "''",
+									"value": "@activity('Fail1').Error.Message",
 									"type": "Expression"
 								}
 							}
 						],
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
 					"sink": {
 						"type": "DelimitedTextSink",
 						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings",
-							"copyBehavior": "MergeFiles"
+							"type": "AzureBlobFSWriteSettings"
 						},
 						"formatSettings": {
 							"type": "DelimitedTextWriteSettings",
@@ -42,9 +64,33 @@
 						}
 					},
 					"enableStaging": false,
-					"parallelCopies": 5,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "c1",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "c1",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Error",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Error",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -54,17 +100,17 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "AzureSqlTable1",
-						"type": "DatasetReference",
-						"parameters": {
-							"tablename": "saleslt.address"
-						}
+						"referenceName": "DelimitedText2",
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "DelimitedText2",
-						"type": "DatasetReference"
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "test.txt"
+						}
 					}
 				]
 			}
