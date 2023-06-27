@@ -1,0 +1,41 @@
+import logging
+import time
+import pandas as pd
+import azure.functions as func
+from azure.storage.blob import BlobServiceClient
+import os
+
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+    filename = req.params.get('name')
+    filename='test.csv'
+   
+    STORAGEACCOUNTURL= 'https://saadl89.blob.core.windows.net'
+    STORAGEACCOUNTKEY= 'test'
+    LOCALFILENAME= '/tmp/'+str(filename)
+
+    CONTAINERNAME= 'azfs/X/1A'
+    BLOBNAME= str(filename) 
+    #download from blob
+    t1=time.time()
+    blob_service_client_instance = BlobServiceClient(account_url=STORAGEACCOUNTURL, credential=STORAGEACCOUNTKEY)
+    blob_client_instance = blob_service_client_instance.get_blob_client(CONTAINERNAME, BLOBNAME, snapshot=None)
+    with open(LOCALFILENAME, "wb") as my_blob:
+        blob_data = blob_client_instance.download_blob()
+        blob_data.readinto(my_blob)
+    t2=time.time()
+    df = pd.read_csv(LOCALFILENAME)
+    targetFilename = filename #.replace('.csv','.xlsx')
+    print(targetFilename)
+    df.to_csv('/tmp/'+targetFilename,header=True)
+    ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    print(ROOT_DIR+'/'+LOCALFILENAME)
+    container_client = blob_service_client_instance.get_container_client(container='adfv2tutorial/output')
+    outdata=''
+    with open(file=os.path.join(ROOT_DIR, LOCALFILENAME), mode="r+") as data:
+        for line in data:
+            if line.strip():
+                outdata+=line
+        blob_client = container_client.upload_blob(name=targetFilename, data=outdata.strip(), overwrite=True)
+    return func.HttpResponse('success')
+
